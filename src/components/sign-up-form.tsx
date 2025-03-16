@@ -1,4 +1,6 @@
+"use client";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,17 +8,62 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import juice from "../assets/juice.jpg";
-import lana from "../assets/lanaLogin.jpeg";
+import { signUp } from "@/api/api";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Import Alert components
+import { AlertCircle } from "lucide-react"; // Import an icon for the alert
 
 export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    phone: "",
+    dob: "",
+    gender: "",
+    address: "",
+    email: "",
+    password: "",
+    role: "",
+  });
+
+  const [error, setError] = useState<string | null>(null); // State to manage error messages
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await signUp(formData);
+      console.log("Success:", response);
+      setError(null); // Clear any previous errors
+    } catch (error) {
+      // console.error("Error:", error);
+      setError(
+        "Account already exists. Please log in or use a different email."
+      ); // Set error message
+    }
+  };
+
   return (
     <div
       className={cn("flex flex-col gap-6 max-w-4xl mx-auto p-4", className)}
       {...props}
     >
+      {/* Error Alert Dialog */}
+      {error && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
       <Card className="overflow-hidden p-0 shadow-lg h-[680px]">
         <CardContent className="grid p-0 md:grid-cols-2">
           <Tabs defaultValue="personal" className="p-6 md:p-8">
@@ -27,7 +74,7 @@ export function SignUpForm({
 
             {/* Personal Details Tab */}
             <TabsContent value="personal">
-              <div className="flex flex-col gap-6">
+              <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                 <div className="flex flex-col items-center text-center">
                   <h1 className="text-2xl font-bold">Create an Account</h1>
                   <p className="text-muted-foreground text-balance">
@@ -43,6 +90,8 @@ export function SignUpForm({
                     placeholder="John"
                     required
                     className="w-full"
+                    value={formData.first_name}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -54,6 +103,8 @@ export function SignUpForm({
                     placeholder="Doe"
                     required
                     className="w-full"
+                    value={formData.last_name}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -64,12 +115,20 @@ export function SignUpForm({
                     type="text"
                     placeholder="9876543210"
                     className="w-full"
+                    value={formData.phone}
+                    onChange={handleChange}
                   />
                 </div>
 
                 <div className="grid gap-3">
                   <Label htmlFor="dob">Date of Birth</Label>
-                  <Input id="dob" type="date" className="w-full" />
+                  <Input
+                    id="dob"
+                    type="date"
+                    className="w-full"
+                    value={formData.dob}
+                    onChange={handleChange}
+                  />
                 </div>
 
                 <div className="grid gap-3">
@@ -77,6 +136,8 @@ export function SignUpForm({
                   <select
                     id="gender"
                     className="border border-gray-300 p-2 rounded-md w-full"
+                    value={formData.gender}
+                    onChange={handleChange}
                   >
                     <option value="">Select Gender</option>
                     <option value="male">Male</option>
@@ -92,14 +153,16 @@ export function SignUpForm({
                     type="text"
                     placeholder="Enter your address"
                     className="w-full"
+                    value={formData.address}
+                    onChange={handleChange}
                   />
                 </div>
-              </div>
+              </form>
             </TabsContent>
 
             {/* Account Details Tab */}
             <TabsContent value="account">
-              <div className="flex flex-col gap-6 h-[680px]">
+              <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                 <div className="grid gap-3">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -108,6 +171,8 @@ export function SignUpForm({
                     placeholder="example@gmail.com"
                     required
                     className="w-full"
+                    value={formData.email}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -118,6 +183,8 @@ export function SignUpForm({
                     type="password"
                     required
                     className="w-full"
+                    value={formData.password}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -127,6 +194,8 @@ export function SignUpForm({
                     id="role"
                     className="border border-gray-300 p-2 rounded-md w-full"
                     required
+                    value={formData.role}
+                    onChange={handleChange}
                   >
                     <option value="">Select Role</option>
                     <option value="super_admin">Super Admin</option>
@@ -148,7 +217,7 @@ export function SignUpForm({
                     Login
                   </a>
                 </div>
-              </div>
+              </form>
             </TabsContent>
           </Tabs>
 
@@ -157,8 +226,8 @@ export function SignUpForm({
             <Image
               src={juice}
               alt="Image"
-              layout=""
-              objectFit="cover"
+              fill
+              style={{ objectFit: "cover" }}
               className="dark:brightness-[0.2] dark:grayscale"
             />
           </div>
