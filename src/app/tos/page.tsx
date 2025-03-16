@@ -9,7 +9,9 @@ export default function TermsOfService() {
     <div className={cn("flex flex-col gap-6 max-w-4xl mx-auto p-4")}>
       <Card className="shadow-lg">
         <CardContent className="p-6 md:p-8">
-          <h1 className="text-2xl font-bold mb-4">Terms of Service</h1>
+          <h1 className="flex text-2xl font-bold mb-4 justify-center">
+            Terms of Service
+          </h1>
           <p className="text-muted-foreground mb-6">
             Welcome to the Artist Management System. By using our platform, you
             agree to the following terms and conditions. Please read them

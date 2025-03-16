@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
 import { useRouter } from "next/navigation";
 export default function PrivacyPolicy() {
   const router = useRouter();
@@ -10,7 +9,9 @@ export default function PrivacyPolicy() {
     <div className={cn("flex flex-col gap-6 max-w-4xl mx-auto p-4")}>
       <Card className="shadow-lg">
         <CardContent className="p-6 md:p-8">
-          <h1 className="text-2xl font-bold mb-4">Privacy Policy</h1>
+          <h1 className="flex justify-center text-2xl font-bold mb-4">
+            Privacy Policy
+          </h1>
           <p className="text-muted-foreground mb-6">
             Your privacy is important to us. This Privacy Policy explains how we
             collect, use, and protect your personal information on the Artist
@@ -22,8 +23,8 @@ export default function PrivacyPolicy() {
           </h2>
           <p className="text-muted-foreground mb-4">
             We collect information you provide when you create an account, such
-            as your name, email address, and payment details. We also collect
-            data about your usage of the platform.
+            as your name, email address details. We also collect data about your
+            usage of the platform.
           </p>
 
           <h2 className="text-xl font-semibold mb-2">

@@ -25,10 +25,11 @@ export function SignUpForm({
     address: "",
     email: "",
     password: "",
+    rePassword: "",
     role: "",
   });
 
-  const [error, setError] = useState<string | null>(null); // State to manage error messages
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -38,15 +39,21 @@ export function SignUpForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate password and re-password
+    if (formData.password !== formData.rePassword) {
+      setError("Passwords do not match. Please try again.");
+      return; // Stop form submission if passwords don't match
+    }
+
     try {
       const response = await signUp(formData);
       console.log("Success:", response);
-      setError(null); // Clear any previous errors
+      setError(null);
     } catch (error) {
-      // console.error("Error:", error);
       setError(
         "Account already exists. Please log in or use a different email."
-      ); // Set error message
+      );
     }
   };
 
@@ -57,7 +64,7 @@ export function SignUpForm({
     >
       {/* Error Alert Dialog */}
       {error && (
-        <Alert variant="destructive" className="mb-4">
+        <Alert variant="destructive" className="mt-10">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
@@ -184,6 +191,18 @@ export function SignUpForm({
                     required
                     className="w-full"
                     value={formData.password}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="grid gap-3">
+                  <Label htmlFor="rePassword">Confirm Password</Label>
+                  <Input
+                    id="rePassword"
+                    type="password"
+                    required
+                    className="w-full"
+                    value={formData.rePassword}
                     onChange={handleChange}
                   />
                 </div>
