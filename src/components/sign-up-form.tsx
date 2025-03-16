@@ -232,8 +232,9 @@ export function SignUpForm({
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking Sign Up, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        By clicking Sign Up, you agree to our{" "}
+        <a href="/tos">Terms of Service</a> and{" "}
+        <a href="/policy">Privacy Policy</a>.
       </div>
     </div>
   );
