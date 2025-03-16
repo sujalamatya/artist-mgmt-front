@@ -226,8 +226,6 @@ export function SignUpForm({
             <Image
               src={juice}
               alt="Image"
-              fill
-              style={{ objectFit: "cover" }}
               className="dark:brightness-[0.2] dark:grayscale"
             />
           </div>
