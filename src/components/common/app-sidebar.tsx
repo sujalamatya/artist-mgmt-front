@@ -9,7 +9,7 @@ import {
   SidebarContent,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { NavMain } from "./nav-main";
+import { NavMain } from "../nav-main";
 
 // Sample data.
 const data = {
