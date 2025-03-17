@@ -217,9 +217,9 @@ export function SignUpForm({
                     onChange={handleChange}
                   >
                     <option value="">Select Role</option>
-                    <option value="super_admin">Super Admin</option>
-                    <option value="artist_manager">Artist Manager</option>
+                    {/* <option value="super_admin">Super Admin</option> */}
                     <option value="artist">Artist</option>
+                    <option value="artist_manager">Artist Manager</option>
                   </select>
                 </div>
 
