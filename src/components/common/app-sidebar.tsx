@@ -39,7 +39,7 @@ export function NavMain({ items }: NavMainProps) {
             {/* Use Link for each navigation item */}
             <Link
               href={item.url}
-              className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded transition-colors"
+              className="flex items-center gap-2 p-2 hover:bg-gray-100 hover:text-black rounded transition-colors"
             >
               <item.icon className="h-5 w-5 flex-shrink-0" />
               <span className="transition-all duration-200 group-[.collapsed]:opacity-0 group-[.collapsed]:w-0 overflow-hidden">

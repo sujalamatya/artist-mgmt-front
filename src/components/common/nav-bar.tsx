@@ -1,25 +1,37 @@
 "use client";
 
-import React from "react";
-import { Avatar } from "../ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut, Settings, HelpCircle, Bell, Mail } from "lucide-react"; // Import Lucide icons
+import { HelpCircle, LogOut, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ThemeToggle } from "../theme-toggle";
 
 const Navbar = () => {
+  const router = useRouter();
+  const [userInitial, setUserInitial] = useState<string>("");
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      const parsedUser = JSON.parse(user);
+      if (parsedUser.first_name) {
+        setUserInitial(parsedUser.first_name[0].toUpperCase());
+      }
+    }
+  }, []);
+
   return (
-    <div className="flex items-center justify-end gap-4 p-2 right-0">
-      {/* Profile Dropdown */}
+    <div className="flex items-center justify-end gap-4 p-2">
       <ThemeToggle />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="focus:outline-none">
-            <Avatar className="h-10 w-10 cursor-pointer border-2 border-white/20 hover:border-white/50 transition-colors bg-amber-600" />
+          <button className="focus:outline-none relative flex items-center justify-center h-10 w-10 rounded-full bg-amber-600 text-white text-lg font-bold">
+            {userInitial || "?"}
           </button>
         </DropdownMenuTrigger>
 
@@ -27,20 +39,28 @@ const Navbar = () => {
           align="end"
           className="w-48 rounded-lg bg-white dark:bg-gray-900 backdrop-blur-md shadow-lg border border-white/20"
         >
-          {/* Profile */}
-          <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md cursor-pointer">
+          <DropdownMenuItem
+            className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md cursor-pointer"
+            onClick={() => router.push("/profile")}
+          >
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </DropdownMenuItem>
 
-          {/* Help */}
           <DropdownMenuItem className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md cursor-pointer">
             <HelpCircle className="mr-2 h-4 w-4" />
             <span>Help</span>
           </DropdownMenuItem>
 
-          {/* Logout */}
-          <DropdownMenuItem className="flex items-center p-2 hover:bg-red-100 dark:hover:bg-red-900 rounded-md cursor-pointer text-red-600 dark:text-red-400">
+          <DropdownMenuItem
+            className="flex items-center p-2 hover:bg-red-100 dark:hover:bg-red-900 rounded-md cursor-pointer text-red-600 dark:text-red-400"
+            onClick={() => {
+              localStorage.removeItem("user");
+              localStorage.removeItem("access_token");
+              localStorage.removeItem("refresh_token");
+              router.push("/");
+            }}
+          >
             <LogOut className="mr-2 h-4 w-4" />
             <span>Logout</span>
           </DropdownMenuItem>

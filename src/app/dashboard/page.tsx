@@ -45,17 +45,15 @@ export default function Page() {
               <Navbar />
             </div>
           </header>
-
-          {/* Main content
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-              <div className="bg-muted/50 aspect-video rounded-xl" />
-              <div className="bg-muted/50 aspect-video rounded-xl" />
-              <div className="bg-muted/50 aspect-video rounded-xl" />
-            </div>
-            <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
-          </div> */}
           <ImageCarousel />
+          {/* Main content */}
+          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+            <div className="grid auto-rows-min gap-4 md:grid-cols-3 mt-5">
+              <div className="bg-muted/50 aspect-video rounded-xl">Artists</div>
+              <div className="bg-muted/50 aspect-video rounded-xl">Music</div>
+              <div className="bg-muted/50 aspect-video rounded-xl">TEST</div>
+            </div>
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </div>

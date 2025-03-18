@@ -242,11 +242,7 @@ export function SignUpForm({
 
           {/* Image Section */}
           <div className="bg-muted relative hidden md:block">
-            <Image
-              src={juice}
-              alt="Image"
-              className="dark:brightness-[0.2] dark:grayscale"
-            />
+            <Image src={juice} alt="Image" className="" />
           </div>
         </CardContent>
       </Card>
