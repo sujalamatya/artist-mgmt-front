@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { AppSidebar } from "@/components/common/app-sidebar";
+import { createArtist } from "@/api/api";
 import Navbar from "@/components/common/nav-bar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,13 +11,29 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createArtist } from "@/api/api"; // Import the createArtist API function
+import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Calendar } from "@/components/ui/calendar"; // shadcn Date Picker
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"; // For Date Picker
+import { format } from "date-fns"; // For formatting dates
+import { Calendar as CalendarIcon } from "lucide-react"; // Calendar icon
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"; // shadcn Select
+import { Checkbox } from "@/components/ui/checkbox"; // shadcn Checkbox
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -43,6 +58,8 @@ export default function ProfilePage() {
     released: false,
   });
 
+  const [completionPercentage, setCompletionPercentage] = useState(0);
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -64,11 +81,40 @@ export default function ProfilePage() {
     }
   }, [router]);
 
+  useEffect(() => {
+    calculateCompletionPercentage();
+  }, [artistData]);
+
+  const calculateCompletionPercentage = () => {
+    const totalFields = Object.keys(artistData).length;
+    const filledFields = Object.values(artistData).filter(
+      (value) => value !== "" && value !== false
+    ).length;
+    const percentage = (filledFields / totalFields) * 100;
+    setCompletionPercentage(Math.round(percentage));
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setArtistData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      setArtistData((prev) => ({
+        ...prev,
+        dob: format(date, "yyyy-MM-dd"), // Format date to match input type="date"
+      }));
+    }
+  };
+
+  const handleSelectChange = (value: string) => {
+    setArtistData((prev) => ({
+      ...prev,
+      gender: value,
     }));
   };
 
@@ -90,9 +136,9 @@ export default function ProfilePage() {
   if (!user) return null; // Prevent rendering until user data is loaded
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background ">
       {/* Header with Breadcrumb and Navbar */}
-      <header className="flex h-16 shrink-0 items-center justify-between px-4 border-b">
+      <header className="flex h-16 shrink-0 items-center justify-between px-4 border-b bg-background">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem className="hidden md:block">
@@ -108,20 +154,27 @@ export default function ProfilePage() {
       </header>
 
       {/* Profile Info Section */}
-      <main className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+      <main className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 max-w-7xl mx-auto w-full">
         {/* Left Profile Card */}
-        <Card className="w-full p-6 shadow-md">
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold text-center">
+              Profile Information
+            </CardTitle>
+          </CardHeader>
           <CardContent className="flex flex-col items-center text-center">
-            <Avatar className="flex items-center justify-center h-20 w-20 bg-amber-600 text-white text-3xl font-bold">
-              {user.first_name[0].toUpperCase()}
+            <Avatar className="h-24 w-24">
+              <AvatarFallback className="bg-primary text-primary-foreground text-4xl font-bold">
+                {user.first_name[0].toUpperCase()}
+              </AvatarFallback>
             </Avatar>
             <h1 className="text-2xl font-bold mt-4">
               {user.first_name} {user.last_name}
             </h1>
-            <p className="text-muted-foreground">{user.role}</p>
+            <p className="text-muted-foreground text-lg">{user.role}</p>
             <Separator className="my-4" />
 
-            <div className="text-left w-full space-y-2">
+            <div className="text-left w-full space-y-3">
               <p>
                 <span className="font-medium">Email:</span> {user.email}
               </p>
@@ -142,11 +195,16 @@ export default function ProfilePage() {
         </Card>
 
         {/* Right Form Card */}
-        <Card className="w-full p-6 shadow-md">
-          <CardContent>
-            <h2 className="text-xl font-semibold text-center mb-4">
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold text-center">
               Create Artist Profile
-            </h2>
+            </CardTitle>
+            <p className="text-center text-sm text-muted-foreground">
+              Profile Completion: {completionPercentage}%
+            </p>
+          </CardHeader>
+          <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="name">Name</Label>
@@ -155,20 +213,36 @@ export default function ProfilePage() {
                   name="name"
                   value={artistData.name}
                   onChange={handleChange}
+                  placeholder="Enter your full name"
                   required
                 />
               </div>
 
               <div>
                 <Label htmlFor="dob">Date of Birth</Label>
-                <Input
-                  id="dob"
-                  name="dob"
-                  type="date"
-                  value={artistData.dob}
-                  onChange={handleChange}
-                  required
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {artistData.dob
+                        ? format(new Date(artistData.dob), "PPP")
+                        : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        artistData.dob ? new Date(artistData.dob) : undefined
+                      }
+                      onSelect={handleDateChange}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div>
@@ -178,19 +252,26 @@ export default function ProfilePage() {
                   name="address"
                   value={artistData.address}
                   onChange={handleChange}
+                  placeholder="Enter your address"
                   required
                 />
               </div>
 
               <div>
                 <Label htmlFor="gender">Gender</Label>
-                <Input
-                  id="gender"
-                  name="gender"
+                <Select
+                  onValueChange={handleSelectChange}
                   value={artistData.gender}
-                  onChange={handleChange}
-                  required
-                />
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select your gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
@@ -217,18 +298,6 @@ export default function ProfilePage() {
                   placeholder="Enter number of albums"
                   required
                 />
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <input
-                  id="released"
-                  type="checkbox"
-                  name="released"
-                  checked={artistData.released}
-                  onChange={handleChange}
-                  className="h-4 w-4"
-                />
-                <Label htmlFor="released">Released</Label>
               </div>
               <Button type="submit" className="w-full">
                 Submit
