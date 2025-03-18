@@ -217,9 +217,9 @@ export function SignUpForm({
                     onChange={handleChange}
                   >
                     <option value="">Select Role</option>
-                    <option value="super_admin">Super Admin</option>
-                    <option value="artist_manager">Artist Manager</option>
+                    {/* <option value="super_admin">Super Admin</option> */}
                     <option value="artist">Artist</option>
+                    <option value="artist_manager">Artist Manager</option>
                   </select>
                 </div>
 
@@ -242,11 +242,7 @@ export function SignUpForm({
 
           {/* Image Section */}
           <div className="bg-muted relative hidden md:block">
-            <Image
-              src={juice}
-              alt="Image"
-              className="dark:brightness-[0.2] dark:grayscale"
-            />
+            <Image src={juice} alt="Image" className="" />
           </div>
         </CardContent>
       </Card>
