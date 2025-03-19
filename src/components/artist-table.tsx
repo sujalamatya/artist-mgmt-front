@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Eye } from "lucide-react";
-import { fetchArtists } from "@/api/api";
+import { MoreVertical, Eye, Edit, Trash } from "lucide-react";
+import { fetchArtists, deleteArtist } from "@/api/api";
 import {
   Table,
   TableBody,
@@ -11,6 +11,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function ArtistTable() {
   const [artists, setArtists] = useState<any[]>([]);
@@ -27,8 +35,22 @@ export default function ArtistTable() {
     getArtists();
   }, []);
 
+  const handleDelete = async (id: number) => {
+    if (window.confirm("Are you sure you want to delete this artist?")) {
+      try {
+        await deleteArtist(id);
+        toast.success("Artist deleted successfully!");
+        setArtists(artists.filter((artist) => artist.id !== id));
+      } catch (error) {
+        console.error("Error deleting artist:", error);
+        toast.error("Failed to delete artist.");
+      }
+    }
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="rounded-lg border shadow-md overflow-hidden">
         <Table className="w-full text-sm text-left">
           <TableCaption className="text-gray-500 dark:text-gray-400">
@@ -70,15 +92,42 @@ export default function ArtistTable() {
                   <TableCell className="px-4 py-2">
                     {new Date(artist.updated_at).toLocaleString()}
                   </TableCell>
-                  <TableCell className="flex justify-center px-4 py-2">
-                    <Eye />
+                  <TableCell className="px-4 py-2 text-center">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem
+                          onClick={() => console.log(`View ${artist.id}`)}
+                        >
+                          <Eye className="mr-2 h-4 w-4" />
+                          View
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => console.log(`Edit ${artist.id}`)}
+                        >
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(artist.id)}
+                          className="text-red-500"
+                        >
+                          <Trash className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={8}
+                  colSpan={9}
                   className="px-4 py-2 text-center text-gray-500 dark:text-gray-400"
                 >
                   No artists found.
