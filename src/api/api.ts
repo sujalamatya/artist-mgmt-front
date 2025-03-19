@@ -1,7 +1,18 @@
+// api.ts
 import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8000/api/user";
 const ARTIST_API_BASE_URL = "http://127.0.0.1:8000/api/artist";
+
+// Fetch Artists API
+export const fetchArtists = async () => {
+  try {
+    const response = await axios.get(`${ARTIST_API_BASE_URL}/artists/`);
+    return response.data;
+  } catch (error: any) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
 
 // SignUp API
 export const signUp = async (userData: {
