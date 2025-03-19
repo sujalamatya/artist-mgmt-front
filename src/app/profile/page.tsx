@@ -135,6 +135,8 @@ export default function ProfilePage() {
 
   if (!user) return null; // Prevent rendering until user data is loaded
 
+  const shouldShowForm = !["super_admin", "artist_manager"].includes(user.role);
+
   return (
     <div className="flex flex-col min-h-screen bg-background ">
       {/* Header with Breadcrumb and Navbar */}
@@ -142,7 +144,7 @@ export default function ProfilePage() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem className="hidden md:block">
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard">Go Back</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="hidden md:block" />
             <BreadcrumbItem>
@@ -154,7 +156,7 @@ export default function ProfilePage() {
       </header>
 
       {/* Profile Info Section */}
-      <main className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 max-w-7xl mx-auto w-full">
+      <main className="flex gap-6 p-6 max-w-7xl mx-auto w-full">
         {/* Left Profile Card */}
         <Card className="w-full">
           <CardHeader>
@@ -194,117 +196,119 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Right Form Card */}
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-center">
-              Create Artist Profile
-            </CardTitle>
-            <p className="text-center text-sm text-muted-foreground">
-              Profile Completion: {completionPercentage}%
-            </p>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={artistData.name}
-                  onChange={handleChange}
-                  placeholder="Enter your full name"
-                  required
-                />
-              </div>
+        {/* Right Form Card - Conditionally Rendered */}
+        {shouldShowForm && (
+          <Card className="w-full">
+            <CardHeader>
+              <CardTitle className="text-2xl font-semibold text-center">
+                Create Artist Profile
+              </CardTitle>
+              <p className="text-center text-sm text-muted-foreground">
+                Profile Completion: {completionPercentage}%
+              </p>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    value={artistData.name}
+                    onChange={handleChange}
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="dob">Date of Birth</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {artistData.dob
-                        ? format(new Date(artistData.dob), "PPP")
-                        : "Pick a date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={
-                        artistData.dob ? new Date(artistData.dob) : undefined
-                      }
-                      onSelect={handleDateChange}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+                <div>
+                  <Label htmlFor="dob">Date of Birth</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {artistData.dob
+                          ? format(new Date(artistData.dob), "PPP")
+                          : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          artistData.dob ? new Date(artistData.dob) : undefined
+                        }
+                        onSelect={handleDateChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-              <div>
-                <Label htmlFor="address">Address</Label>
-                <Input
-                  id="address"
-                  name="address"
-                  value={artistData.address}
-                  onChange={handleChange}
-                  placeholder="Enter your address"
-                  required
-                />
-              </div>
+                <div>
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    name="address"
+                    value={artistData.address}
+                    onChange={handleChange}
+                    placeholder="Enter your address"
+                    required
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="gender">Gender</Label>
-                <Select
-                  onValueChange={handleSelectChange}
-                  value={artistData.gender}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select your gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                <div>
+                  <Label htmlFor="gender">Gender</Label>
+                  <Select
+                    onValueChange={handleSelectChange}
+                    value={artistData.gender}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select your gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div>
-                <Label htmlFor="first_release_year">First Release Year</Label>
-                <Input
-                  id="first_release_year"
-                  name="first_release_year"
-                  value={artistData.first_release_year}
-                  onChange={handleChange}
-                  type="number"
-                  placeholder="Enter first release year"
-                  required
-                />
-              </div>
+                <div>
+                  <Label htmlFor="first_release_year">First Release Year</Label>
+                  <Input
+                    id="first_release_year"
+                    name="first_release_year"
+                    value={artistData.first_release_year}
+                    onChange={handleChange}
+                    type="number"
+                    placeholder="Enter first release year"
+                    required
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="no_of_albums">Number of Albums</Label>
-                <Input
-                  id="no_of_albums"
-                  name="no_of_albums"
-                  value={artistData.no_of_albums}
-                  onChange={handleChange}
-                  type="number"
-                  placeholder="Enter number of albums"
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full">
-                Submit
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                <div>
+                  <Label htmlFor="no_of_albums">Number of Albums</Label>
+                  <Input
+                    id="no_of_albums"
+                    name="no_of_albums"
+                    value={artistData.no_of_albums}
+                    onChange={handleChange}
+                    type="number"
+                    placeholder="Enter number of albums"
+                    required
+                  />
+                </div>
+                <Button type="submit" className="w-full">
+                  Submit
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        )}
       </main>
     </div>
   );

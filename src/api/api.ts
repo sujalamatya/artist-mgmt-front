@@ -23,6 +23,18 @@ export const fetchArtistById = async (id: number) => {
   }
 };
 
+// Fetch all songs by artist ID
+export const fetchArtistSongs = async (id: number) => {
+  try {
+    const response = await axios.get(
+      `${ARTIST_API_BASE_URL}/artists/${id}/songs/`
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
 // Create a new artist
 export const createArtist = async (artistData: {
   name: string;
