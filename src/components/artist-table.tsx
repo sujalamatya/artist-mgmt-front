@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // Use next/navigation for newer Next.js versions
 import { MoreVertical, Eye, Edit, Trash } from "lucide-react";
 import { fetchArtists, deleteArtist } from "@/api/api";
 import {
@@ -22,8 +23,12 @@ import { ToastContainer, toast } from "react-toastify";
 
 export default function ArtistTable() {
   const [artists, setArtists] = useState<any[]>([]);
+  const [isMounted, setIsMounted] = useState(false); // Track mount status
+  const router = useRouter();
 
   useEffect(() => {
+    setIsMounted(true); // Set to true once component is mounted on the client side
+
     const getArtists = async () => {
       try {
         const data = await fetchArtists();
@@ -48,8 +53,18 @@ export default function ArtistTable() {
     }
   };
 
+  const handleView = (id: number) => {
+    if (isMounted) {
+      router.push(`/artists/${id}`); // Navigate only if mounted
+    }
+  };
+
+  if (!isMounted) {
+    return null; // Prevent rendering on server
+  }
+
   return (
-    <div className="w-full max-w-7xl mx-auto p-4">
+    <div className="w-full max-w-8xl mx-auto p-4">
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="rounded-lg border shadow-md overflow-hidden">
         <Table className="w-full text-sm text-left">
@@ -101,7 +116,7 @@ export default function ArtistTable() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
                         <DropdownMenuItem
-                          onClick={() => console.log(`View ${artist.id}`)}
+                          onClick={() => handleView(artist.id)} // Use handleView for navigation
                         >
                           <Eye className="mr-2 h-4 w-4" />
                           View
