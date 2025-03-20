@@ -1,5 +1,5 @@
-import ViewArtist from "@/components/artist-profile";
-import ArtistProfileSongs from "@/components/artist-profile-songs";
+import ViewArtist from "@/components/artist/artist-profile";
+import ArtistProfileSongs from "@/components/artist/artist-profile-songs";
 import Navbar from "@/components/common/nav-bar";
 import {
   Breadcrumb,

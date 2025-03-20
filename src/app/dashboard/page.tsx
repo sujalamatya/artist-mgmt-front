@@ -1,7 +1,7 @@
 import { AppSidebar } from "@/components/common/app-sidebar";
 import Navbar from "@/components/common/nav-bar";
-import ImageCarousel from "@/components/main-pics";
-import { TotalArtists } from "@/components/total-artist";
+import ImageCarousel from "@/components/dashboard/main-pics";
+import { TotalArtists } from "@/components/dashboard/total-artist";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,8 +17,8 @@ import {
 } from "@/components/ui/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Music, Album } from "lucide-react"; // Icons
-import { MusicGenresChart } from "@/components/music-genre-chart";
-import { TotalAlbums } from "@/components/total-album";
+import { MusicGenresChart } from "@/components/dashboard/music-genre-chart";
+import { TotalAlbums } from "@/components/dashboard/total-album";
 
 export default function Page() {
   return (

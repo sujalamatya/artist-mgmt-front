@@ -1,4 +1,4 @@
-import AddArtist from "@/components/artist-add";
+import AddArtist from "@/components/artist/artist-add";
 import Navbar from "@/components/common/nav-bar";
 import {
   Breadcrumb,
