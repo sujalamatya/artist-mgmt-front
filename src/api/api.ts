@@ -2,8 +2,6 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8000/api/user";
 const ARTIST_API_BASE_URL = "http://127.0.0.1:8000/api/artist";
-
-// Get stored token from localStorage
 const getAuthToken = () => {
   if (typeof window !== "undefined") {
     return localStorage.getItem("access_token");
@@ -14,13 +12,11 @@ const getAuthToken = () => {
 // Axios instance with auth header (using the token from localStorage)
 const axiosInstance = axios.create();
 
-// Set the auth token in axios headers if available
 const token = getAuthToken();
 if (token) {
   axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`;
 }
 
-// Fetch all artists (Requires Authorization)
 export const fetchArtists = async () => {
   try {
     const response = await axiosInstance.get(`${ARTIST_API_BASE_URL}/artists/`);
@@ -84,7 +80,6 @@ export const updateArtist = async (
     gender: string;
     first_release_year: number;
     no_of_albums: number;
-    released: boolean;
   }>
 ) => {
   try {
