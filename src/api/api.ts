@@ -3,30 +3,49 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:8000/api/user";
 const ARTIST_API_BASE_URL = "http://127.0.0.1:8000/api/artist";
 
-// Fetch all artists
+// Get stored token from localStorage
+const getAuthToken = () => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("access_token");
+  }
+  return null;
+};
+
+// Axios instance with auth header (using the token from localStorage)
+const axiosInstance = axios.create();
+
+// Set the auth token in axios headers if available
+const token = getAuthToken();
+if (token) {
+  axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`;
+}
+
+// Fetch all artists (Requires Authorization)
 export const fetchArtists = async () => {
   try {
-    const response = await axios.get(`${ARTIST_API_BASE_URL}/artists/`);
+    const response = await axiosInstance.get(`${ARTIST_API_BASE_URL}/artists/`);
     return response.data;
   } catch (error: any) {
     throw error.response ? error.response.data : error.message;
   }
 };
 
-// Fetch single artist by ID
+// Fetch single artist by ID (Requires Authorization)
 export const fetchArtistById = async (id: number) => {
   try {
-    const response = await axios.get(`${ARTIST_API_BASE_URL}/artists/${id}`);
+    const response = await axiosInstance.get(
+      `${ARTIST_API_BASE_URL}/artists/${id}`
+    );
     return response.data;
   } catch (error: any) {
     throw error.response ? error.response.data : error.message;
   }
 };
 
-// Fetch all songs by artist ID
+// Fetch all songs by artist ID (Requires Authorization)
 export const fetchArtistSongs = async (id: number) => {
   try {
-    const response = await axios.get(
+    const response = await axiosInstance.get(
       `${ARTIST_API_BASE_URL}/artists/${id}/songs/`
     );
     return response.data;
@@ -35,7 +54,7 @@ export const fetchArtistSongs = async (id: number) => {
   }
 };
 
-// Create a new artist
+// Create a new artist (Requires Authorization)
 export const createArtist = async (artistData: {
   name: string;
   dob: string;
@@ -43,10 +62,9 @@ export const createArtist = async (artistData: {
   gender: string;
   first_release_year: number;
   no_of_albums: number;
-  released: boolean;
 }) => {
   try {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `${ARTIST_API_BASE_URL}/artists/`,
       artistData
     );
@@ -56,7 +74,7 @@ export const createArtist = async (artistData: {
   }
 };
 
-// Update an artist by ID
+// Update an artist by ID (Requires Authorization)
 export const updateArtist = async (
   id: number,
   artistData: Partial<{
@@ -70,7 +88,7 @@ export const updateArtist = async (
   }>
 ) => {
   try {
-    const response = await axios.put(
+    const response = await axiosInstance.put(
       `${ARTIST_API_BASE_URL}/artists/${id}/`,
       artistData
     );
@@ -80,17 +98,17 @@ export const updateArtist = async (
   }
 };
 
-// Delete an artist by ID
+// Delete an artist by ID (Requires Authorization)
 export const deleteArtist = async (id: number) => {
   try {
-    await axios.delete(`${ARTIST_API_BASE_URL}/artists/${id}/`);
+    await axiosInstance.delete(`${ARTIST_API_BASE_URL}/artists/${id}/`);
     return { success: true, message: "Artist deleted successfully" };
   } catch (error: any) {
     throw error.response ? error.response.data : error.message;
   }
 };
 
-// SignUp API
+// SignUp API (No auth required)
 export const signUp = async (userData: {
   first_name: string;
   last_name: string;
@@ -110,13 +128,23 @@ export const signUp = async (userData: {
   }
 };
 
-// Login API
+// Login API (No auth required)
 export const login = async (credentials: {
   email: string;
   password: string;
 }) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/login/`, credentials);
+
+    // Store token in localStorage after login
+    if (response.data.access_token) {
+      localStorage.setItem("access_token", response.data.access_token);
+
+      // Update axiosInstance headers dynamically after login
+      axiosInstance.defaults.headers[
+        "Authorization"
+      ] = `Bearer ${response.data.access_token}`;
+    }
     return response.data;
   } catch (error: any) {
     throw error.response ? error.response.data : error.message;

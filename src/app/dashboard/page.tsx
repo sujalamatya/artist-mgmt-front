@@ -18,6 +18,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Music, Album } from "lucide-react"; // Icons
 import { MusicGenresChart } from "@/components/music-genre-chart";
+import { TotalAlbums } from "@/components/total-album";
 
 export default function Page() {
   return (
@@ -55,18 +56,7 @@ export default function Page() {
               <TotalArtists />
 
               {/* Albums Card */}
-              <Card className="dark:bg-muted/40">
-                <CardHeader className="flex items-center gap-3">
-                  <Album className="w-6 h-6 text-primary" />
-                  <CardTitle>Albums</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-semibold">Coming soon</p>
-                  <p className="text-muted-foreground text-sm">
-                    Album statistics feature
-                  </p>
-                </CardContent>
-              </Card>
+              <TotalAlbums />
             </div>
           </div>
         </SidebarInset>
