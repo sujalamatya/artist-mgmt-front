@@ -22,9 +22,22 @@ export const MusicGenresChart = () => {
   useEffect(() => {
     const fetchMusic = async () => {
       try {
+        const token = localStorage.getItem("access_token"); // Retrieve token
+
+        if (!token) {
+          console.error("No token found. Please log in.");
+          return;
+        }
+
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/artist/songs/"
+          "http://127.0.0.1:8000/api/artist/songs/",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Attach token to request
+            },
+          }
         );
+
         const songs = response.data;
 
         // Count genres

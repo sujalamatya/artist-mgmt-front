@@ -27,7 +27,7 @@ export default function ArtistTable() {
   const router = useRouter();
 
   useEffect(() => {
-    setIsMounted(true); // Set to true once component is mounted on the client side
+    setIsMounted(true);
 
     const getArtists = async () => {
       try {

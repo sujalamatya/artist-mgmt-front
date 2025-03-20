@@ -26,7 +26,7 @@ export function TotalArtists() {
         <CardTitle>Artists</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-2xl font-semibold">
+        <p className="mt-10 text-7xl font-semibold">
           {artistCount !== null ? artistCount : "Loading..."}
         </p>
         <p className="text-muted-foreground text-sm">

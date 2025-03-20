@@ -1,3 +1,4 @@
+import AddArtistDialog from "@/components/artist-add";
 import ArtistTable from "@/components/artist-table";
 import { AppSidebar } from "@/components/common/app-sidebar";
 import Navbar from "@/components/common/nav-bar";
@@ -21,9 +22,7 @@ export default function Artist() {
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
-          {/* Header with SidebarTrigger, Breadcrumb, and Navbar */}
-          <header className="flex h-16 shrink-0 items-center justify-between transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-            {/* Left side: SidebarTrigger and Breadcrumb */}
+          <header className="flex h-16 shrink-0 items-center justify-between">
             <div className="flex items-center gap-2 px-4">
               <SidebarTrigger className="-ml-1" />
               <Breadcrumb className="top-0">
@@ -38,15 +37,13 @@ export default function Artist() {
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
-
-            {/* Right side: Navbar */}
             <div className="px-4">
               <Navbar />
             </div>
           </header>
-          {/* Main content */}
           <div className="flex flex-col w-full h-full gap-4 p-4 mt-10">
             <ArtistTable />
+            <AddArtistDialog />
           </div>
         </SidebarInset>
       </SidebarProvider>
