@@ -39,17 +39,17 @@ export const fetchArtistById = async (id: number) => {
 };
 
 // Fetch all songs by artist ID (Requires Authorization)
-export const fetchArtistSongs = async (id: number) => {
+export const fetchArtistSongs = async (id?: number) => {
   try {
-    const response = await axiosInstance.get(
-      `${ARTIST_API_BASE_URL}/artists/${id}/songs/`
-    );
+    const url = id
+      ? `${ARTIST_API_BASE_URL}/artists/${id}/songs/`
+      : "http://127.0.0.1:8000/api/artist/songs/"; // Fetch all songs if no ID is provided
+    const response = await axiosInstance.get(url);
     return response.data;
   } catch (error: any) {
     throw error.response ? error.response.data : error.message;
   }
 };
-
 // Create a new artist (Requires Authorization)
 export const createArtist = async (artistData: IArtist) => {
   try {
