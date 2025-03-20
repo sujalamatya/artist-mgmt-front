@@ -1,6 +1,7 @@
 import { AppSidebar } from "@/components/common/app-sidebar";
 import Navbar from "@/components/common/nav-bar";
 import ImageCarousel from "@/components/main-pics";
+import { TotalArtists } from "@/components/total-artist";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,12 +10,15 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Music, Album } from "lucide-react"; // Icons
+import { MusicGenresChart } from "@/components/music-genre-chart";
+import { TotalAlbums } from "@/components/total-album";
 
 export default function Page() {
   return (
@@ -22,12 +26,11 @@ export default function Page() {
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
-          {/* Header with SidebarTrigger, Breadcrumb, and Navbar */}
-          <header className="flex h-16 shrink-0 items-center justify-between transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-            {/* Left side: SidebarTrigger and Breadcrumb */}
-            <div className="flex items-center gap-2 px-4">
+          {/* Header Section */}
+          <header className="flex h-16 items-center justify-between px-4 md:px-6">
+            <div className="flex items-center gap-2">
               <SidebarTrigger className="-ml-1" />
-              <Breadcrumb className="top-0">
+              <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem className="hidden md:block">
                     <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
@@ -39,19 +42,21 @@ export default function Page() {
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
-
-            {/* Right side: Navbar */}
-            <div className="px-4">
-              <Navbar />
-            </div>
+            <Navbar />
           </header>
-          <ImageCarousel />
-          {/* Main content */}
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="grid auto-rows-min gap-4 md:grid-cols-3 mt-5">
-              <div className="bg-muted/50 aspect-video rounded-xl">Artists</div>
-              <div className="bg-muted/50 aspect-video rounded-xl">Music</div>
-              <div className="bg-muted/50 aspect-video rounded-xl">TEST</div>
+
+          {/* Main Content */}
+          <div className="p-4">
+            <ImageCarousel />
+            <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 mt-6">
+              {/* Music Card */}
+              <MusicGenresChart />
+
+              {/* Total Artists */}
+              <TotalArtists />
+
+              {/* Albums Card */}
+              <TotalAlbums />
             </div>
           </div>
         </SidebarInset>
