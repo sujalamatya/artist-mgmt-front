@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import juice from "../assets/juice.jpg";
+import juice from "../../assets/juice.jpg";
 import { signUp } from "@/api/api";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Import Alert components
 import { AlertCircle } from "lucide-react"; // Import an icon for the alert

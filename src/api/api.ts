@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { IArtist, IUser, ILoginCredentials } from "@/types/types";
 const API_BASE_URL = "http://localhost:8000/api/user";
 const ARTIST_API_BASE_URL = "http://127.0.0.1:8000/api/artist";
 const getAuthToken = () => {
@@ -51,16 +51,9 @@ export const fetchArtistSongs = async (id: number) => {
 };
 
 // Create a new artist (Requires Authorization)
-export const createArtist = async (artistData: {
-  name: string;
-  dob: string;
-  address: string;
-  gender: string;
-  first_release_year: number;
-  no_of_albums: number;
-}) => {
+export const createArtist = async (artistData: IArtist) => {
   try {
-    const response = await axiosInstance.post(
+    const response = await axiosInstance.post<IArtist>(
       `${ARTIST_API_BASE_URL}/artists/`,
       artistData
     );
@@ -69,7 +62,6 @@ export const createArtist = async (artistData: {
     throw error.response ? error.response.data : error.message;
   }
 };
-
 // Update an artist by ID (Requires Authorization)
 export const updateArtist = async (
   id: number,
@@ -104,19 +96,12 @@ export const deleteArtist = async (id: number) => {
 };
 
 // SignUp API (No auth required)
-export const signUp = async (userData: {
-  first_name: string;
-  last_name: string;
-  email: string;
-  password: string;
-  phone: string;
-  dob: string;
-  gender: string;
-  address: string;
-  role: string;
-}) => {
+export const signUp = async (userData: IUser) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/register/`, userData);
+    const response = await axios.post<IUser>(
+      `${API_BASE_URL}/register/`,
+      userData
+    );
     return response.data;
   } catch (error: any) {
     throw error.response ? error.response.data : error.message;
@@ -124,18 +109,15 @@ export const signUp = async (userData: {
 };
 
 // Login API (No auth required)
-export const login = async (credentials: {
-  email: string;
-  password: string;
-}) => {
+export const login = async (credentials: ILoginCredentials) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/login/`, credentials);
+    const response = await axios.post<{ access_token: string }>(
+      `${API_BASE_URL}/login/`,
+      credentials
+    );
 
-    // Store token in localStorage after login
     if (response.data.access_token) {
       localStorage.setItem("access_token", response.data.access_token);
-
-      // Update axiosInstance headers dynamically after login
       axiosInstance.defaults.headers[
         "Authorization"
       ] = `Bearer ${response.data.access_token}`;
