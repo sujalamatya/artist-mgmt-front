@@ -1,17 +1,17 @@
-// app/artists/add/page.tsx
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createArtist } from "@/api/api";
+import React, { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { fetchArtistById, updateArtist } from "@/api/api";
 import { toast } from "react-toastify";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-export default function AddArtist() {
+export default function EditArtist() {
   const router = useRouter();
+  const { id } = useParams();
   const [artist, setArtist] = useState({
     name: "",
     dob: "",
@@ -21,6 +21,19 @@ export default function AddArtist() {
     no_of_albums: 0,
   });
 
+  useEffect(() => {
+    const getArtist = async () => {
+      try {
+        const data = await fetchArtistById(Number(id));
+        setArtist(data);
+      } catch (error) {
+        console.error("Error fetching artist:", error);
+        toast.error("Failed to fetch artist details.");
+      }
+    };
+    getArtist();
+  }, [id]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setArtist((prev) => ({ ...prev, [name]: value }));
@@ -29,12 +42,12 @@ export default function AddArtist() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createArtist(artist);
-      toast.success("Artist added successfully!");
+      await updateArtist(Number(id), artist);
+      toast.success("Artist updated successfully!");
       router.push("/artists"); // Redirect to the artists table
     } catch (error) {
-      console.error("Error adding artist:", error);
-      toast.error("Failed to add artist.");
+      console.error("Error updating artist:", error);
+      toast.error("Failed to update artist.");
     }
   };
 
@@ -42,7 +55,7 @@ export default function AddArtist() {
     <div className="w-full max-w-4xl mx-auto p-4">
       <Card>
         <CardHeader>
-          <CardTitle>Add Artist</CardTitle>
+          <CardTitle>Edit Artist</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -115,7 +128,7 @@ export default function AddArtist() {
               />
             </div>
             <Button type="submit" className="w-full">
-              Add Artist
+              Update Artist
             </Button>
           </form>
         </CardContent>

@@ -1,4 +1,4 @@
-import AddArtistDialog from "@/components/artist-add";
+// app/artists/page.tsx
 import ArtistTable from "@/components/artist-table";
 import { AppSidebar } from "@/components/common/app-sidebar";
 import Navbar from "@/components/common/nav-bar";
@@ -15,6 +15,9 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import Link from "next/link";
 
 export default function Artist() {
   return (
@@ -41,9 +44,16 @@ export default function Artist() {
               <Navbar />
             </div>
           </header>
-          <div className="flex flex-col w-full h-full gap-4 p-4 mt-10">
+          <div className=" w-full h-full gap-4 p-4 mt-10">
             <ArtistTable />
-            <AddArtistDialog />
+            <div className="flex justify-end">
+              <Link href="/artists/add">
+                <Button className="mr-5">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Artist
+                </Button>
+              </Link>
+            </div>
           </div>
         </SidebarInset>
       </SidebarProvider>
