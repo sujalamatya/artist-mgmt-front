@@ -10,24 +10,12 @@ import {
 } from "lucide-react";
 import * as React from "react";
 import Link from "next/link";
-
+import { NavItem, NavMainProps } from "@/types/types";
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-
-// Define the type for a navigation item
-type NavItem = {
-  title: string;
-  url: string;
-  icon: React.ComponentType<{ className?: string }>;
-};
-
-// Define the type for the NavMain component's props
-type NavMainProps = {
-  items: NavItem[];
-};
 
 // NavMain component
 export function NavMain({ items }: NavMainProps) {
