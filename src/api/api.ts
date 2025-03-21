@@ -62,6 +62,17 @@ export const searchSongs = async (query: string) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+// Search songs by artist and query
+export const searchSongsById = async (query: string, artistId: number) => {
+  try {
+    const response = await axiosInstance.get(
+      `${ARTIST_API_BASE_URL}/songs/?artist_id=${artistId}&search=${query}`
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
 
 // Create a new artist (Requires Authorization)
 export const createArtist = async (artistData: IArtist) => {

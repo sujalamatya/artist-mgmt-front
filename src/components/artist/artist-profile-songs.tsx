@@ -1,18 +1,21 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { fetchArtistSongs } from "@/api/api";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { fetchArtistSongs, searchSongsById } from "@/api/api";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
-  TableHeader,
-  TableRow,
-  TableHead,
   TableBody,
   TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Search } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function ArtistProfileSongs() {
   const params = useParams();
@@ -20,6 +23,7 @@ export default function ArtistProfileSongs() {
 
   const [songs, setSongs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (id) {
@@ -37,6 +41,19 @@ export default function ArtistProfileSongs() {
       getSongs();
     }
   }, [id]);
+
+  const handleSearch = async () => {
+    if (!id) return;
+    try {
+      const artistId = parseInt(id, 10);
+      const data = searchQuery
+        ? await searchSongsById(searchQuery, artistId)
+        : await fetchArtistSongs(artistId);
+      setSongs(data);
+    } catch (error) {
+      console.error("Error searching songs:", error);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -56,6 +73,22 @@ export default function ArtistProfileSongs() {
           <CardTitle>Artist Songs</CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="flex items-center w-full max-w-sm space-x-2 rounded-lg border px-3.5 py-2 mb-4">
+            <Search className="h-4 w-4" />
+            <Input
+              type="search"
+              placeholder="Search"
+              className="w-full border-0 h-8 font-semibold"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key == "Enter") {
+                  handleSearch();
+                }
+              }}
+            />
+            {/* <Button onClick={handleSearch}>Search</Button> */}
+          </div>
           {songs.length > 0 ? (
             <Table>
               <TableHeader>

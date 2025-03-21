@@ -1,9 +1,15 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { fetchArtistSongs, searchSongs } from "@/api/api";
-import { MoreVertical, Eye, Edit, Trash, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -13,14 +19,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ToastContainer, toast } from "react-toastify";
+import { Eye, MoreVertical, Search } from "lucide-react";
+import { ToastContainer } from "react-toastify";
 import { Input } from "../ui/input";
 
 export default function MusicTable() {
@@ -63,7 +63,7 @@ export default function MusicTable() {
   }
 
   return (
-    <div className="w-full max-w-8xl mx-auto p-4">
+    <div className="flex flex-col  w-full max-w-8xl mx-auto p-4">
       <div className="flex items-center w-full max-w-sm space-x-2 rounded-lg border px-3.5 py-2 mb-4">
         <Search className="h-4 w-4" />
         <Input
@@ -72,10 +72,12 @@ export default function MusicTable() {
           className="w-full border-0 h-8 font-semibold"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key == "Enter") {
+              handleSearch();
+            }
+          }}
         />
-        <Button className="dark:bg-gray-500" onClick={handleSearch}>
-          Search
-        </Button>
       </div>
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="rounded-lg border shadow-md overflow-hidden">
