@@ -1,7 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { MoreVertical, Eye, Edit, Trash } from "lucide-react";
+
+import { fetchArtistSongs, searchSongs } from "@/api/api";
+import { MoreVertical, Eye, Edit, Trash, Search } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -19,11 +21,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ToastContainer, toast } from "react-toastify";
-import { fetchArtistSongs } from "@/api/api";
+import { Input } from "../ui/input";
 
 export default function MusicTable() {
   const [songs, setSongs] = useState<any[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   useEffect(() => {
     setIsMounted(true);
@@ -37,9 +40,21 @@ export default function MusicTable() {
     };
     getSongs();
   }, []);
+
+  const handleSearch = async () => {
+    try {
+      const data = searchQuery
+        ? await searchSongs(searchQuery)
+        : await fetchArtistSongs();
+      setSongs(data);
+    } catch (error) {
+      console.error("Error searching songs:", error);
+    }
+  };
+
   const handleView = (id: number) => {
     if (isMounted) {
-      router.push(`/songs/${id}`);
+      router.push(`/music/${id}`);
     }
   };
 
@@ -49,6 +64,19 @@ export default function MusicTable() {
 
   return (
     <div className="w-full max-w-8xl mx-auto p-4">
+      <div className="flex items-center w-full max-w-sm space-x-2 rounded-lg border px-3.5 py-2 mb-4">
+        <Search className="h-4 w-4" />
+        <Input
+          type="search"
+          placeholder="Search"
+          className="w-full border-0 h-8 font-semibold"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <Button className="dark:bg-gray-500" onClick={handleSearch}>
+          Search
+        </Button>
+      </div>
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="rounded-lg border shadow-md overflow-hidden">
         <Table className="w-full text-sm text-left">
