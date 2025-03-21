@@ -19,26 +19,24 @@ export function LoginForm({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null); // State for error handling
-  const router = useRouter(); // Initialize useRouter
-
+  const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null); // Clear previous errors
+    setError(null);
 
     try {
       const credentials = { email, password };
       const response = await login(credentials); // Call the login API
       console.log("Login successful:", response);
 
-      // Handle successful login (e.g., store tokens, redirect, etc.)
+      // Handle successful login (e.g., store tokens, redirect etc)
       localStorage.setItem("access_token", response.access_token);
       localStorage.setItem("refresh_token", response.refresh_token);
       localStorage.setItem("user", JSON.stringify(response.user));
 
       // Redirect to /dashboard
-      router.push("/dashboard"); // Programmatic navigation
+      router.push("/dashboard");
     } catch (error: any) {
-      // console.error("Login failed:", error);
       setError(error.message || "Invalid email or password. Please try again.");
     }
   };

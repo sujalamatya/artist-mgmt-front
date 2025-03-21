@@ -1,3 +1,14 @@
+export interface ILoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface IUser {
+  id: number;
+  email: string;
+  name: string;
+}
+
 export interface IArtist {
   id?: number;
   name: string;

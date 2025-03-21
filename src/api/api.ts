@@ -135,13 +135,16 @@ export const signUp = async (userData: IUser) => {
 // Login API (No auth required)
 export const login = async (credentials: ILoginCredentials) => {
   try {
-    const response = await axios.post<{ access_token: string }>(
-      `${API_BASE_URL}/login/`,
-      credentials
-    );
+    const response = await axios.post<{
+      access_token: string;
+      refresh_token: string;
+      user: IUser;
+    }>(`${API_BASE_URL}/login/`, credentials);
 
     if (response.data.access_token) {
       localStorage.setItem("access_token", response.data.access_token);
+      localStorage.setItem("refresh_token", response.data.refresh_token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
       axiosInstance.defaults.headers[
         "Authorization"
       ] = `Bearer ${response.data.access_token}`;
