@@ -39,10 +39,34 @@ export const fetchArtistById = async (id: number) => {
 };
 
 // Fetch all songs by artist ID (Requires Authorization)
-export const fetchArtistSongs = async (id: number) => {
+export const fetchArtistSongs = async (id?: number) => {
+  try {
+    const url = id
+      ? `${ARTIST_API_BASE_URL}/artists/${id}/songs/`
+      : `${ARTIST_API_BASE_URL}/songs/`; // Fetch all songs if no ID is provided
+    const response = await axiosInstance.get(url);
+    return response.data;
+  } catch (error: any) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// search songs
+export const searchSongs = async (query: string) => {
   try {
     const response = await axiosInstance.get(
-      `${ARTIST_API_BASE_URL}/artists/${id}/songs/`
+      `${ARTIST_API_BASE_URL}/songs/?search=${query}`
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+// Search songs by artist and query
+export const searchSongsById = async (query: string, artistId: number) => {
+  try {
+    const response = await axiosInstance.get(
+      `${ARTIST_API_BASE_URL}/songs/?artist_id=${artistId}&search=${query}`
     );
     return response.data;
   } catch (error: any) {
