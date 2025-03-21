@@ -11,6 +11,7 @@ import juice from "../../assets/juice.jpg";
 import { signUp } from "@/api/api";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Import Alert components
 import { AlertCircle } from "lucide-react"; // Import an icon for the alert
+import { redirect } from "next/navigation";
 
 export function SignUpForm({
   className,
@@ -43,12 +44,13 @@ export function SignUpForm({
     // Validate password and re-password
     if (formData.password !== formData.rePassword) {
       setError("Passwords do not match. Please try again.");
-      return; // Stop form submission if passwords don't match
+      return;
     }
 
     try {
       const response = await signUp(formData);
       console.log("Success:", response);
+      redirect("/");
       setError(null);
     } catch (error) {
       setError(

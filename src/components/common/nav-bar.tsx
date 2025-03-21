@@ -10,13 +10,14 @@ import { HelpCircle, LogOut, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "../theme-toggle";
+import { removeCookie } from "@/actions/cookies";
 
 const Navbar = () => {
   const router = useRouter();
   const [userInitial, setUserInitial] = useState<string>("");
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
+    const user = sessionStorage.getItem("user");
     if (user) {
       const parsedUser = JSON.parse(user);
       if (parsedUser.first_name) {
@@ -24,6 +25,13 @@ const Navbar = () => {
       }
     }
   }, []);
+
+  const handleLogout = async () => {
+    await removeCookie("access_token");
+    await removeCookie("refresh_token");
+    sessionStorage.removeItem("user");
+    router.push("/"); // Redirect to home or login page
+  };
 
   return (
     <div className="flex items-center justify-end gap-4 p-2">
@@ -54,12 +62,7 @@ const Navbar = () => {
 
           <DropdownMenuItem
             className="flex items-center p-2 hover:bg-red-100 dark:hover:bg-red-900 rounded-md cursor-pointer text-red-600 dark:text-red-400"
-            onClick={() => {
-              localStorage.removeItem("user");
-              localStorage.removeItem("access_token");
-              localStorage.removeItem("refresh_token");
-              router.push("/");
-            }}
+            onClick={handleLogout}
           >
             <LogOut className="mr-2 h-4 w-4" />
             <span>Logout</span>

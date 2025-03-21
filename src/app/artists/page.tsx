@@ -45,7 +45,6 @@ export default function Artist() {
             </div>
           </header>
           <div className=" w-full h-full gap-4 p-4 mt-10">
-            <ArtistTable />
             <div className="flex justify-end">
               <Link href="/artists/add">
                 <Button className="mr-5">
@@ -54,6 +53,7 @@ export default function Artist() {
                 </Button>
               </Link>
             </div>
+            <ArtistTable />
           </div>
         </SidebarInset>
       </SidebarProvider>
