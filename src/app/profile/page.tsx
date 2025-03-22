@@ -1,6 +1,6 @@
 "use client";
 
-import { createArtist } from "@/api/api";
+import { createArtist, fetchArtists } from "@/api/api"; // Import fetchArtists
 import Navbar from "@/components/common/nav-bar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -59,9 +59,10 @@ export default function ProfilePage() {
   });
 
   const [completionPercentage, setCompletionPercentage] = useState(0);
+  const [artistExists, setArtistExists] = useState(false); // New state to track if artist exists
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
@@ -76,10 +77,23 @@ export default function ProfilePage() {
         no_of_albums: "",
         released: false,
       });
+
+      // Check if artist with the same name already exists
+      checkIfArtistExists(`${parsedUser.first_name} ${parsedUser.last_name}`);
     } else {
       router.push("/login"); // Redirect to login if user is not logged in
     }
   }, [router]);
+
+  const checkIfArtistExists = async (name: string) => {
+    try {
+      const artists = await fetchArtists();
+      const exists = artists.some((artist: any) => artist.name === name);
+      setArtistExists(exists);
+    } catch (error) {
+      console.error("Error fetching artists:", error);
+    }
+  };
 
   useEffect(() => {
     calculateCompletionPercentage();
@@ -127,6 +141,7 @@ export default function ProfilePage() {
         no_of_albums: Number(artistData.no_of_albums),
       });
       alert("Artist profile created successfully!");
+      setArtistExists(true); // Set artistExists to true after successful creation
     } catch (error) {
       console.error("Error creating artist:", error);
       alert("Failed to create artist profile.");
@@ -135,7 +150,8 @@ export default function ProfilePage() {
 
   if (!user) return null; // Prevent rendering until user data is loaded
 
-  const shouldShowForm = !["super_admin", "artist_manager"].includes(user.role);
+  const shouldShowForm =
+    !["super_admin", "artist_manager"].includes(user.role) && !artistExists;
 
   return (
     <div className="flex flex-col min-h-screen bg-background ">

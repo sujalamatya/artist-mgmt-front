@@ -159,6 +159,15 @@ export const searchSongsById = async (query: string, artistId: number) => {
 // Create a new artist (Requires Authorization)
 export const createArtist = async (artistData: IArtist) => {
   try {
+    // Retrieve user info from session storage
+    const userString = sessionStorage.getItem("user");
+    const user: IUser | null = userString ? JSON.parse(userString) : null;
+
+    // If the user is an artist, set user_id from session storage
+    if (user && user.role === "artist") {
+      artistData.id = user.id; // Store user_id in artistData
+    }
+
     const response = await axiosInstance.post<IArtist>(
       `${ARTIST_API_BASE_URL}/artists/`,
       artistData

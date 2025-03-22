@@ -62,12 +62,12 @@ const getNavItems = (role: string) => {
   if (role === "artist") {
     return [
       dashboardItem,
-      { title: "My Music", url: "/my-music", icon: Music },
-      { title: "My Albums", url: "/my-albums", icon: Library },
+      { title: "MyMusic", url: "/my-music", icon: Music },
+      { title: "MyAlbums", url: "/my-albums", icon: Library },
       eventsItem,
       settingsItem,
     ];
-  } else if (role === "super_admin") {
+  } else if (role === "super_admin" || "artist_manager") {
     return [
       dashboardItem,
       { title: "Artists", url: "/artists", icon: User },
@@ -106,9 +106,11 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       className="group min-h-screen w-60"
     >
       <SidebarHeader>
-        <Link href="/dashboard" className="flex items-center gap-2 p-2">
+        <Link href={"/dashboard"} className="flex items-center gap-2 p-2">
+          {/* Ensure the Music icon is always visible */}
           <Music className="h-6 w-6 flex-shrink-0" />
-          <span className="text-xl font-bold transition-all duration-200 group-[.collapsed]:hidden">
+          {/* Hide the text when collapsed */}
+          <span className="text-xl font-bold transition-all duration-200 group-[.collapsed]:opacity-0 group-[.collapsed]:w-0 overflow-hidden">
             MelodySphere
           </span>
         </Link>
