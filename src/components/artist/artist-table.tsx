@@ -40,6 +40,12 @@ export default function ArtistTable() {
     getArtists();
   }, []);
 
+  const handleEdit = (id: number) => {
+    if (isMounted) {
+      router.push(`/artists/${id}/edit`); // Navigate to the edit page
+    }
+  };
+
   const handleDelete = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this artist?")) {
       try {
@@ -121,9 +127,7 @@ export default function ArtistTable() {
                           <Eye className="mr-2 h-4 w-4" />
                           View
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => console.log(`Edit ${artist.id}`)}
-                        >
+                        <DropdownMenuItem onClick={() => handleEdit(artist.id)}>
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
                         </DropdownMenuItem>

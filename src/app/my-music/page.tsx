@@ -18,8 +18,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import MusicTable from "@/components/music/music-table";
 
-export default function Artist() {
+export default function MyMusicPage() {
   return (
     <div>
       <SidebarProvider>
@@ -35,7 +36,7 @@ export default function Artist() {
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage>Artist</BreadcrumbPage>
+                    <BreadcrumbPage>My Music</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -45,15 +46,7 @@ export default function Artist() {
             </div>
           </header>
           <div className=" w-full h-full gap-4 p-4 mt-10">
-            <div className="flex justify-end">
-              <Link href="/artists/add">
-                <Button className="mr-5">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Artist
-                </Button>
-              </Link>
-            </div>
-            <ArtistTable />
+            <MusicTable />
           </div>
         </SidebarInset>
       </SidebarProvider>

@@ -1,5 +1,4 @@
-import ViewArtist from "@/components/artist/artist-profile";
-import ArtistProfileSongs from "@/components/artist/artist-profile-songs";
+import AddArtist from "@/components/artist/artist-add";
 import Navbar from "@/components/common/nav-bar";
 import {
   Breadcrumb,
@@ -9,9 +8,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import React from "react";
 
-export default function ArtistP() {
+export default function AddArtistP() {
   return (
     <div>
       <header className="flex h-16 shrink-0 items-center justify-between px-4 border-b bg-background">
@@ -22,15 +20,14 @@ export default function ArtistP() {
             </BreadcrumbItem>
             <BreadcrumbSeparator className="hidden md:block" />
             <BreadcrumbItem>
-              <BreadcrumbPage>Artist Profile</BreadcrumbPage>
+              <BreadcrumbPage>Add Artist</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
         <Navbar />
       </header>
       <div className="w-full p-4 mt-10">
-        <ViewArtist />
-        <ArtistProfileSongs />
+        <AddArtist />
       </div>
     </div>
   );

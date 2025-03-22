@@ -1,3 +1,4 @@
+import EditArtist from "@/components/artist/artist-edit-table";
 import ViewArtist from "@/components/artist/artist-profile";
 import ArtistProfileSongs from "@/components/artist/artist-profile-songs";
 import Navbar from "@/components/common/nav-bar";
@@ -22,15 +23,14 @@ export default function ArtistP() {
             </BreadcrumbItem>
             <BreadcrumbSeparator className="hidden md:block" />
             <BreadcrumbItem>
-              <BreadcrumbPage>Artist Profile</BreadcrumbPage>
+              <BreadcrumbPage>Edit Artist</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
         <Navbar />
       </header>
       <div className="w-full p-4 mt-10">
-        <ViewArtist />
-        <ArtistProfileSongs />
+        <EditArtist />
       </div>
     </div>
   );
