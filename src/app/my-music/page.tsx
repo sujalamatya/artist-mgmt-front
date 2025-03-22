@@ -1,7 +1,7 @@
 // app/artists/page.tsx
-import ArtistTable from "@/components/artist/artist-table";
 import { AppSidebar } from "@/components/common/app-sidebar";
 import Navbar from "@/components/common/nav-bar";
+import MyMusicTable from "@/components/music/my-music-table";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,10 +15,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import Link from "next/link";
-import MusicTable from "@/components/music/music-table";
 
 export default function MyMusicPage() {
   return (
@@ -46,7 +42,7 @@ export default function MyMusicPage() {
             </div>
           </header>
           <div className=" w-full h-full gap-4 p-4 mt-10">
-            <MusicTable />
+            <MyMusicTable />
           </div>
         </SidebarInset>
       </SidebarProvider>

@@ -133,6 +133,18 @@ export const fetchArtistSongs = async (id?: number) => {
   }
 };
 
+// Fetch user's own music (Requires Authorization)
+export const fetchMyMusic = async () => {
+  try {
+    const response = await axiosInstance.get(
+      `${ARTIST_API_BASE_URL}/songs/?user_music=true`
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
 // search songs
 export const searchSongs = async (query: string) => {
   try {
