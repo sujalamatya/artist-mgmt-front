@@ -27,7 +27,6 @@ export default function Page() {
   const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
-    // Retrieve user data from sessionStorage
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
       const user = JSON.parse(storedUser);

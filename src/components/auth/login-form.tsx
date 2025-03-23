@@ -34,7 +34,6 @@ export function LoginForm({
       localStorage.setItem("refresh_token", response.refresh_token);
       localStorage.setItem("user", JSON.stringify(response.user));
 
-      // Redirect to /dashboard
       router.push("/dashboard");
     } catch (error: any) {
       setError(error.message || "Invalid email or password. Please try again.");

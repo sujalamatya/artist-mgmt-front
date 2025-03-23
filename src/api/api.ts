@@ -229,7 +229,7 @@ export const signUp = async (userData: IUser) => {
       `${API_BASE_URL}/register/`,
       userData
     );
-    return response.data;
+    // return response.data;
   } catch (error: any) {
     throw error.response ? error.response.data : error.message;
   }

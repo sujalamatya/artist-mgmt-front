@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import juice from "../../assets/juice.jpg";
 import { signUp } from "@/api/api";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Import Alert components
-import { AlertCircle } from "lucide-react"; // Import an icon for the alert
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import { redirect } from "next/navigation";
 
 export function SignUpForm({
@@ -40,23 +40,25 @@ export function SignUpForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Validate password and re-password
     if (formData.password !== formData.rePassword) {
       setError("Passwords do not match. Please try again.");
       return;
     }
 
-    try {
-      const response = await signUp(formData);
-      console.log("Success:", response);
-      redirect("/");
-      setError(null);
-    } catch (error) {
-      setError(
-        "Account already exists. Please log in or use a different email."
-      );
-    }
+    // Remove rePassword before sending data
+    const { rePassword, ...userData } = formData;
+
+    // try {
+    const response = await signUp(formData);
+    console.log("Success:", response);
+    setError(null);
+    redirect("/");
+    // } catch (error) {
+    //   setError(
+    //     "Account already exists. Please log in or use a different email."
+    //   );
+    //   // redirect("/");
+    // }
   };
 
   return (
