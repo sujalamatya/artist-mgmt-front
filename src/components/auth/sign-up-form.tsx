@@ -5,13 +5,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import juice from "../../assets/juice.jpg";
 import { signUp } from "@/api/api";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export function SignUpForm({
   className,
@@ -31,34 +38,57 @@ export function SignUpForm({
   });
 
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
+  };
+
+  const handleSelectChange = (id: string, value: string) => {
+    setFormData({ ...formData, [id]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate passwords match
     if (formData.password !== formData.rePassword) {
       setError("Passwords do not match. Please try again.");
       return;
     }
 
+    // Validate required fields
+    const requiredFields = [
+      "first_name",
+      "last_name",
+      "email",
+      "password",
+      "rePassword",
+      "role",
+    ];
+    for (const field of requiredFields) {
+      if (!formData[field as keyof typeof formData]) {
+        setError(`Please fill out the ${field.replace("_", " ")} field.`);
+        return;
+      }
+    }
+
     // Remove rePassword before sending data
     const { rePassword, ...userData } = formData;
 
-    // try {
-    const response = await signUp(formData);
-    console.log("Success:", response);
-    setError(null);
-    redirect("/");
-    // } catch (error) {
-    //   setError(
-    //     "Account already exists. Please log in or use a different email."
-    //   );
-    //   // redirect("/");
-    // }
+    try {
+      const response = await signUp(userData);
+      console.log("Success:", response);
+      setError(null);
+      router.push("/"); // Redirect to home page after successful signup
+    } catch (error) {
+      setError(
+        "Account already exists. Please log in or use a different email."
+      );
+    }
   };
 
   return (
@@ -144,17 +174,21 @@ export function SignUpForm({
 
                 <div className="grid gap-3">
                   <Label htmlFor="gender">Gender</Label>
-                  <select
-                    id="gender"
-                    className="border border-gray-300 p-2 rounded-md w-full"
+                  <Select
                     value={formData.gender}
-                    onChange={handleChange}
+                    onValueChange={(value) =>
+                      handleSelectChange("gender", value)
+                    }
                   >
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
+                    <SelectTrigger className="border border-gray-300 p-2 rounded-md w-full">
+                      <SelectValue placeholder="Select Gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="grid gap-3">
@@ -210,21 +244,22 @@ export function SignUpForm({
                     onChange={handleChange}
                   />
                 </div>
-
                 <div className="grid gap-3">
                   <Label htmlFor="role">Role</Label>
-                  <select
-                    id="role"
-                    className="border border-gray-300 p-2 rounded-md w-full"
-                    required
+                  <Select
                     value={formData.role}
-                    onChange={handleChange}
+                    onValueChange={(value) => handleSelectChange("role", value)}
                   >
-                    <option value="">Select Role</option>
-                    {/* <option value="super_admin">Super Admin</option> */}
-                    <option value="artist">Artist</option>
-                    <option value="artist_manager">Artist Manager</option>
-                  </select>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="artist">Artist</SelectItem>
+                      <SelectItem value="artist_manager">
+                        Artist Manager
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <Button type="submit" className="w-full">
