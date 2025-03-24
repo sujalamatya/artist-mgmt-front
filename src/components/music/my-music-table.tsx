@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { fetchMyMusic } from "@/api/api"; // New function for My Music
+import { fetchMyMusic, searchMyMusic } from "@/api/api"; // Import the new searchMyMusic function
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -41,17 +41,15 @@ export default function MyMusicTable() {
     getSongs();
   }, []);
 
-  //   const handleSearch = async () => {
-  //     try {
-  //       // Apply the search query logic here
-  //       const data = searchQuery
-  //         ? await searchSongs(searchQuery)
-  //         : await fetchMyMusic();
-  //       setSongs(data);
-  //     } catch (error) {
-  //       console.error("Error searching songs:", error);
-  //     }
-  //   };
+  // Handle search functionality
+  const handleSearch = async () => {
+    try {
+      const data = await searchMyMusic(searchQuery); // Use the new searchMyMusic function
+      setSongs(data);
+    } catch (error) {
+      console.error("Error searching songs:", error);
+    }
+  };
 
   const handleView = (id: number) => {
     if (isMounted) {
@@ -64,21 +62,26 @@ export default function MyMusicTable() {
   }
 
   return (
-    <div className="flex flex-col  w-full max-w-8xl mx-auto p-4">
-      <div className="flex items-center w-full max-w-sm space-x-2 rounded-lg border px-3.5 py-2 mb-4">
-        {/* <Search className="h-4 w-4" /> */}
-        <Input
-          type="search"
-          placeholder="Search"
-          className="w-full border-0 h-8 font-semibold"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              // handleSearch();
-            }
-          }}
-        />
+    <div className="flex flex-col w-full max-w-8xl mx-auto p-4">
+      <div className="flex items-center justify-between w-full mb-4">
+        <div className="flex items-center w-full max-w-sm space-x-2 rounded-lg border px-3.5 py-2">
+          <Input
+            type="search"
+            placeholder="Search"
+            className="w-full border-0 h-8 font-semibold"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
+          />
+          <Button variant="ghost" size="icon" onClick={handleSearch}>
+            <Search className="h-4 w-4" />
+          </Button>
+        </div>
+        <Button onClick={() => router.push("/my-music/add")}>Add song</Button>
       </div>
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="rounded-lg border shadow-md overflow-hidden">
