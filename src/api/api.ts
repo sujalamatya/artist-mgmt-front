@@ -1,22 +1,104 @@
 import axios from "axios";
+import { setCookie, getCookie } from "@/actions/cookies";
 import { IArtist, IUser, ILoginCredentials } from "@/types/types";
 const API_BASE_URL = "http://localhost:8000/api/user";
 const ARTIST_API_BASE_URL = "http://127.0.0.1:8000/api/artist";
-const getAuthToken = () => {
-  if (typeof window !== "undefined") {
-    return localStorage.getItem("access_token");
-  }
-  return null;
+const getAuthToken = async () => {
+  return await getCookie("access_token");
 };
 
-// Axios instance with auth header (using the token from localStorage)
+// Axios instance with auth header (fetching token from cookies)
 const axiosInstance = axios.create();
 
-const token = getAuthToken();
-if (token) {
-  axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`;
-}
+axiosInstance.interceptors.request.use(async (config) => {
+  const token = await getAuthToken();
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return config;
+});
 
+// Refresh token function
+const refreshAccessToken = async () => {
+  try {
+    const refreshToken = await getCookie("refresh_token");
+    if (!refreshToken) throw new Error("No refresh token available");
+
+    const response = await axios.post<{ access_token: string }>(
+      `${API_BASE_URL}/refresh/`,
+      { refresh_token: refreshToken }
+    );
+
+    const newAccessToken = response.data.access_token;
+
+    // Store the new access token
+    await setCookie(
+      "access_token",
+      newAccessToken,
+      Date.now() + 15 * 60 * 1000 // 15 min expiry
+    );
+
+    return newAccessToken;
+  } catch (error) {
+    console.error("Error refreshing token:", error);
+    return null;
+  }
+};
+
+// Axios response interceptor for handling token expiration
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // If token is expired, try refreshing it
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      const newAccessToken = await refreshAccessToken();
+      if (newAccessToken) {
+        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+        return axiosInstance(originalRequest);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+// Login API with proper token storage
+export const login = async (credentials: ILoginCredentials) => {
+  try {
+    const response = await axios.post<{
+      access_token: string;
+      refresh_token: string;
+      user: IUser;
+    }>(`${API_BASE_URL}/login/`, credentials);
+
+    if (response.data.access_token) {
+      // Store Access Token
+      await setCookie(
+        "access_token",
+        response.data.access_token,
+        Date.now() + 15 * 60 * 1000 // 15 min expiry
+      );
+
+      // Store Refresh Token
+      await setCookie(
+        "refresh_token",
+        response.data.refresh_token,
+        Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days expiry
+      );
+
+      // Store user info in session storage
+      sessionStorage.setItem("user", JSON.stringify(response.data.user));
+    }
+
+    return response.data;
+  } catch (error: any) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
 export const fetchArtists = async () => {
   try {
     const response = await axiosInstance.get(`${ARTIST_API_BASE_URL}/artists/`);
@@ -51,6 +133,18 @@ export const fetchArtistSongs = async (id?: number) => {
   }
 };
 
+// Fetch user's own music (Requires Authorization)
+export const fetchMyMusic = async () => {
+  try {
+    const response = await axiosInstance.get(
+      `${ARTIST_API_BASE_URL}/songs/?user_music=true`
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
 // search songs
 export const searchSongs = async (query: string) => {
   try {
@@ -77,6 +171,15 @@ export const searchSongsById = async (query: string, artistId: number) => {
 // Create a new artist (Requires Authorization)
 export const createArtist = async (artistData: IArtist) => {
   try {
+    // Retrieve user info from session storage
+    const userString = sessionStorage.getItem("user");
+    const user: IUser | null = userString ? JSON.parse(userString) : null;
+
+    // If the user is an artist, set user_id from session storage
+    if (user && user.role === "artist") {
+      artistData.id = user.id; // Store user_id in artistData
+    }
+
     const response = await axiosInstance.post<IArtist>(
       `${ARTIST_API_BASE_URL}/artists/`,
       artistData
@@ -126,30 +229,7 @@ export const signUp = async (userData: IUser) => {
       `${API_BASE_URL}/register/`,
       userData
     );
-    return response.data;
-  } catch (error: any) {
-    throw error.response ? error.response.data : error.message;
-  }
-};
-
-// Login API (No auth required)
-export const login = async (credentials: ILoginCredentials) => {
-  try {
-    const response = await axios.post<{
-      access_token: string;
-      refresh_token: string;
-      user: IUser;
-    }>(`${API_BASE_URL}/login/`, credentials);
-
-    if (response.data.access_token) {
-      localStorage.setItem("access_token", response.data.access_token);
-      localStorage.setItem("refresh_token", response.data.refresh_token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
-      axiosInstance.defaults.headers[
-        "Authorization"
-      ] = `Bearer ${response.data.access_token}`;
-    }
-    return response.data;
+    // return response.data;
   } catch (error: any) {
     throw error.response ? error.response.data : error.message;
   }

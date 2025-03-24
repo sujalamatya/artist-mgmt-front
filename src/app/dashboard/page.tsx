@@ -1,7 +1,14 @@
+"use client"; // Ensure this runs only on the client side
+
+import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/common/app-sidebar";
 import Navbar from "@/components/common/nav-bar";
 import ImageCarousel from "@/components/dashboard/main-pics";
 import { TotalArtists } from "@/components/dashboard/total-artist";
+import { TotalAlbums } from "@/components/dashboard/total-album";
+// import { MySongs } from "@/components/dashboard/my-songs";
+// import { MyAlbums } from "@/components/dashboard/my-albums";
+import { MusicGenresChart } from "@/components/dashboard/music-genre-chart";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,12 +22,18 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Music, Album } from "lucide-react"; // Icons
-import { MusicGenresChart } from "@/components/dashboard/music-genre-chart";
-import { TotalAlbums } from "@/components/dashboard/total-album";
 
 export default function Page() {
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setUserRole(user.role);
+    }
+  }, []);
+
   return (
     <div>
       <SidebarProvider>
@@ -49,14 +62,20 @@ export default function Page() {
           <div className="p-4">
             <ImageCarousel />
             <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 mt-6">
-              {/* Music Card */}
               <MusicGenresChart />
-
-              {/* Total Artists */}
-              <TotalArtists />
-
-              {/* Albums Card */}
-              <TotalAlbums />
+              {userRole === "artist" ? (
+                <>
+                  <div>My songs</div>
+                  <div>My albums</div>
+                  {/* <MySongs />
+                  <MyAlbums /> */}
+                </>
+              ) : (
+                <>
+                  <TotalArtists />
+                  <TotalAlbums />
+                </>
+              )}
             </div>
           </div>
         </SidebarInset>

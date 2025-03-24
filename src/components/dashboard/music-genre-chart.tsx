@@ -1,10 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Music } from "lucide-react";
 import axios from "axios";
+import { getCookie } from "@/actions/cookies";
 
 const COLORS = [
   "#8884d8",
@@ -18,23 +26,23 @@ const COLORS = [
 
 export const MusicGenresChart = () => {
   const [data, setData] = useState<{ name: string; value: number }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchMusic = async () => {
       try {
-        const token = localStorage.getItem("access_token"); // Retrieve token
+        const token = await getCookie("access_token"); // Retrieve token from cookies
 
         if (!token) {
-          console.error("No token found. Please log in.");
+          setError("Unauthorized: Please log in.");
           return;
         }
 
         const response = await axios.get(
           "http://127.0.0.1:8000/api/artist/songs/",
           {
-            headers: {
-              Authorization: `Bearer ${token}`, // Attach token to request
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
 
@@ -47,14 +55,17 @@ export const MusicGenresChart = () => {
         });
 
         // Format data for Pie Chart
-        const chartData = Object.keys(genreCount).map((genre) => ({
-          name: genre,
-          value: genreCount[genre],
+        const chartData = Object.entries(genreCount).map(([name, value]) => ({
+          name,
+          value,
         }));
 
         setData(chartData);
       } catch (error) {
+        setError("Failed to fetch music data.");
         console.error("Error fetching music data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -68,27 +79,32 @@ export const MusicGenresChart = () => {
         <CardTitle>Music Genres</CardTitle>
       </CardHeader>
       <CardContent className="flex justify-center">
-        {data.length > 0 ? (
-          <PieChart width={250} height={250}>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              label
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="value"
-            >
-              {data.map((_, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
+        {loading ? (
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        ) : error ? (
+          <p className="text-sm text-red-500">{error}</p>
+        ) : data.length > 0 ? (
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                label
+                outerRadius={80}
+                dataKey="value"
+              >
+                {data.map((_, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
         ) : (
           <p className="text-sm text-muted-foreground">No data available</p>
         )}

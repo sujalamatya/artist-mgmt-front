@@ -1,4 +1,4 @@
-"use client"; // Ensure this is a Client Component
+"use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import lana from "../../assets/lanaLogin.jpeg";
 import { useState } from "react";
-import { login } from "@/api/api"; // Import the login function
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // For error handling
-import { AlertCircle } from "lucide-react"; // For error icon
-import { useRouter } from "next/navigation"; // For programmatic navigation
+import { login } from "@/api/api";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function LoginForm({
   className,
@@ -34,7 +34,6 @@ export function LoginForm({
       localStorage.setItem("refresh_token", response.refresh_token);
       localStorage.setItem("user", JSON.stringify(response.user));
 
-      // Redirect to /dashboard
       router.push("/dashboard");
     } catch (error: any) {
       setError(error.message || "Invalid email or password. Please try again.");

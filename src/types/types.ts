@@ -3,11 +3,11 @@ export interface ILoginCredentials {
   password: string;
 }
 
-export interface IUser {
-  id: number;
-  email: string;
-  name: string;
-}
+// export interface IUser {
+//   id: number;
+//   email: string;
+//   name: string;
+// }
 
 export interface IArtist {
   id?: number;
@@ -20,6 +20,7 @@ export interface IArtist {
 }
 
 export interface IUser {
+  id?: number;
   first_name: string;
   last_name: string;
   email: string;
