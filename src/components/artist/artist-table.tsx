@@ -79,6 +79,7 @@ export default function ArtistTable() {
           </TableCaption>
           <TableHeader className="bg-gray-100 dark:bg-gray-800">
             <TableRow>
+              <TableHead className="px-4 py-2">Image</TableHead>
               <TableHead className="px-4 py-2">Name</TableHead>
               <TableHead className="px-4 py-2">Date Of Birth</TableHead>
               <TableHead className="px-4 py-2">Gender</TableHead>
@@ -97,6 +98,17 @@ export default function ArtistTable() {
                   key={artist.id}
                   className="border-b hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
+                  <TableCell className="px-4 py-2">
+                    <img
+                      src={
+                        artist.image
+                          ? `http://localhost:8000${artist.image}`
+                          : "/fallback.jpg"
+                      }
+                      alt={artist.name}
+                      className="w-12 h-12 object-cover rounded-full"
+                    />
+                  </TableCell>
                   <TableCell className="px-4 py-2">{artist.name}</TableCell>
                   <TableCell className="px-4 py-2">{artist.dob}</TableCell>
                   <TableCell className="px-4 py-2">{artist.gender}</TableCell>
@@ -121,9 +133,7 @@ export default function ArtistTable() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem
-                          onClick={() => handleView(artist.id)} // Use handleView for navigation
-                        >
+                        <DropdownMenuItem onClick={() => handleView(artist.id)}>
                           <Eye className="mr-2 h-4 w-4" />
                           View
                         </DropdownMenuItem>
@@ -146,7 +156,7 @@ export default function ArtistTable() {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={9}
+                  colSpan={10}
                   className="px-4 py-2 text-center text-gray-500 dark:text-gray-400"
                 >
                   No artists found.

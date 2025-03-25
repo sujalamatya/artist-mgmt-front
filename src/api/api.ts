@@ -222,6 +222,16 @@ export const deleteArtist = async (id: number) => {
   }
 };
 
+// Delete an SONG by ID (Requires Authorization)
+export const deleteSong = async (id: number) => {
+  try {
+    await axiosInstance.delete(`${ARTIST_API_BASE_URL}/songs/${id}/`);
+    return { success: true, message: "Song deleted successfully" };
+  } catch (error: any) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
 // SignUp API (No auth required)
 export const signUp = async (userData: IUser) => {
   try {

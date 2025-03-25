@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { fetchMyMusic, searchMyMusic } from "@/api/api"; // Import the new searchMyMusic function
+import { deleteSong, fetchMyMusic, searchMyMusic } from "@/api/api"; // Import the new searchMyMusic function
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,8 +18,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Eye, MoreVertical, Search } from "lucide-react";
-import { ToastContainer } from "react-toastify";
+import { Eye, MoreVertical, Search, Trash } from "lucide-react";
+import { toast, ToastContainer } from "react-toastify";
 import { Input } from "../ui/input";
 
 export default function MyMusicTable() {
@@ -32,7 +32,7 @@ export default function MyMusicTable() {
     setIsMounted(true);
     const getSongs = async () => {
       try {
-        const data = await fetchMyMusic(); // Fetch user's music
+        const data = await fetchMyMusic();
         setSongs(data);
       } catch (error) {
         console.error("Error fetching songs:", error);
@@ -41,16 +41,26 @@ export default function MyMusicTable() {
     getSongs();
   }, []);
 
-  // Handle search functionality
   const handleSearch = async () => {
     try {
-      const data = await searchMyMusic(searchQuery); // Use the new searchMyMusic function
+      const data = await searchMyMusic(searchQuery);
       setSongs(data);
     } catch (error) {
       console.error("Error searching songs:", error);
     }
   };
-
+  const handleDelete = async (id: number) => {
+    if (window.confirm("Are you sure you want to delete this artist?")) {
+      try {
+        await deleteSong(id);
+        toast.success("Artist deleted successfully!");
+        setSongs(songs.filter((songs) => songs.id !== id));
+      } catch (error) {
+        console.error("Error deleting artist:", error);
+        toast.error("Failed to delete artist.");
+      }
+    }
+  };
   const handleView = (id: number) => {
     if (isMounted) {
       router.push(`/music/${id}`);
@@ -126,6 +136,13 @@ export default function MyMusicTable() {
                         <DropdownMenuItem onClick={() => handleView(song.id)}>
                           <Eye className="mr-2 h-4 w-4" />
                           View
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(song.id)}
+                          className="text-red-500"
+                        >
+                          <Trash className="mr-2 h-4 w-4" />
+                          Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
