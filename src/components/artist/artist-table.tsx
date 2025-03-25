@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Use next/navigation for newer Next.js versions
+import { useRouter } from "next/navigation";
 import { MoreVertical, Eye, Edit, Trash } from "lucide-react";
 import { fetchArtists, deleteArtist } from "@/api/api";
 import {
@@ -20,30 +20,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ToastContainer, toast } from "react-toastify";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 export default function ArtistTable() {
   const [artists, setArtists] = useState<any[]>([]);
-  const [isMounted, setIsMounted] = useState(false); // Track mount status
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    setIsMounted(true);
-
     const getArtists = async () => {
       try {
         const data = await fetchArtists();
         setArtists(data);
       } catch (error) {
         console.error("Error fetching artists:", error);
+        toast.error("Failed to load artists");
+      } finally {
+        setIsLoading(false);
       }
     };
     getArtists();
   }, []);
 
   const handleEdit = (id: number) => {
-    if (isMounted) {
-      router.push(`/artists/${id}/edit`); // Navigate to the edit page
-    }
+    router.push(`/artists/${id}/edit`);
   };
 
   const handleDelete = async (id: number) => {
@@ -60,92 +62,136 @@ export default function ArtistTable() {
   };
 
   const handleView = (id: number) => {
-    if (isMounted) {
-      router.push(`/artists/${id}`); // Navigate only if mounted
-    }
+    router.push(`/artists/${id}`);
   };
 
-  if (!isMounted) {
-    return null; // Prevent rendering on server
-  }
-
   return (
-    <div className="w-full max-w-8xl mx-auto p-4">
+    <div className="w-full max-w-screen-2xl mx-auto p-4 md:p-6 space-y-4">
       <ToastContainer position="top-right" autoClose={3000} />
-      <div className="rounded-lg border shadow-md overflow-hidden">
-        <Table className="w-full text-sm text-left">
-          <TableCaption className="text-gray-500 dark:text-gray-400">
-            A list of Artists.
+
+      <div className="rounded-lg border shadow-sm overflow-hidden">
+        <Table>
+          <TableCaption className="text-muted-foreground">
+            List of registered artists
           </TableCaption>
-          <TableHeader className="bg-gray-100 dark:bg-gray-800">
+          <TableHeader className="bg-muted/50">
             <TableRow>
-              <TableHead className="px-4 py-2">Image</TableHead>
-              <TableHead className="px-4 py-2">Name</TableHead>
-              <TableHead className="px-4 py-2">Date Of Birth</TableHead>
-              <TableHead className="px-4 py-2">Gender</TableHead>
-              <TableHead className="px-4 py-2">Address</TableHead>
-              <TableHead className="px-4 py-2">First Release Year</TableHead>
-              <TableHead className="px-4 py-2">Albums Released</TableHead>
-              <TableHead className="px-4 py-2">Joined At</TableHead>
-              <TableHead className="px-4 py-2">Updated At</TableHead>
-              <TableHead className="px-4 py-2">Actions</TableHead>
+              <TableHead className="w-[80px]">Image</TableHead>
+              <TableHead className="min-w-[150px]">Name</TableHead>
+              <TableHead className="w-[120px]">Date of Birth</TableHead>
+              <TableHead className="w-[100px]">Gender</TableHead>
+              <TableHead className="min-w-[180px]">Address</TableHead>
+              <TableHead className="w-[120px]">First Release</TableHead>
+              <TableHead className="w-[120px]">Albums</TableHead>
+              <TableHead className="w-[140px]">Joined At</TableHead>
+              <TableHead className="w-[140px]">Updated At</TableHead>
+              <TableHead className="w-[80px] text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {artists.length > 0 ? (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell>
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[120px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[80px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[60px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[150px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[80px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[60px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[100px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[100px]" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-8 w-8 mx-auto" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : artists.length > 0 ? (
               artists.map((artist) => (
-                <TableRow
-                  key={artist.id}
-                  className="border-b hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  <TableCell className="px-4 py-2">
-                    <img
-                      src={
-                        artist.image
-                          ? `http://localhost:8000${artist.image}`
-                          : "/fallback.jpg"
-                      }
-                      alt={artist.name}
-                      className="w-12 h-12 object-cover rounded-full"
-                    />
+                <TableRow key={artist.id} className="hover:bg-muted/50">
+                  <TableCell>
+                    <Avatar className="h-[5rem] w-[5rem]">
+                      <AvatarImage
+                        src={
+                          artist.image
+                            ? `http://localhost:8000${artist.image}`
+                            : undefined
+                        }
+                        alt={artist.name}
+                      />
+                      <AvatarFallback>
+                        {artist.name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                   </TableCell>
-                  <TableCell className="px-4 py-2">{artist.name}</TableCell>
-                  <TableCell className="px-4 py-2">{artist.dob}</TableCell>
-                  <TableCell className="px-4 py-2">{artist.gender}</TableCell>
-                  <TableCell className="px-4 py-2">{artist.address}</TableCell>
-                  <TableCell className="px-4 py-2">
-                    {artist.first_release_year}
+                  <TableCell className="font-medium">{artist.name}</TableCell>
+                  <TableCell>{artist.dob || "-"}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="capitalize">
+                      {artist.gender || "-"}
+                    </Badge>
                   </TableCell>
-                  <TableCell className="px-4 py-2">
-                    {artist.no_of_albums}
+                  <TableCell className="text-muted-foreground">
+                    {artist.address || "-"}
                   </TableCell>
-                  <TableCell className="px-4 py-2">
-                    {new Date(artist.created_at).toLocaleString()}
+                  <TableCell>{artist.first_release_year || "-"}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">
+                      {artist.no_of_albums || "0"} albums
+                    </Badge>
                   </TableCell>
-                  <TableCell className="px-4 py-2">
-                    {new Date(artist.updated_at).toLocaleString()}
+                  <TableCell>
+                    {new Date(artist.created_at).toLocaleDateString()}
                   </TableCell>
-                  <TableCell className="px-4 py-2 text-center">
+                  <TableCell>
+                    {new Date(artist.updated_at).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical />
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreVertical className="h-4 w-4" />
+                          <span className="sr-only">Actions</span>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => handleView(artist.id)}>
-                          <Eye className="mr-2 h-4 w-4" />
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => handleView(artist.id)}
+                          className="cursor-pointer gap-2"
+                        >
+                          <Eye className="h-4 w-4" />
                           View
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleEdit(artist.id)}>
-                          <Edit className="mr-2 h-4 w-4" />
+                        <DropdownMenuItem
+                          onClick={() => handleEdit(artist.id)}
+                          className="cursor-pointer gap-2"
+                        >
+                          <Edit className="h-4 w-4" />
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleDelete(artist.id)}
-                          className="text-red-500"
+                          className="cursor-pointer text-destructive focus:text-destructive gap-2"
                         >
-                          <Trash className="mr-2 h-4 w-4" />
+                          <Trash className="h-4 w-4" />
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -155,11 +201,8 @@ export default function ArtistTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={10}
-                  className="px-4 py-2 text-center text-gray-500 dark:text-gray-400"
-                >
-                  No artists found.
+                <TableCell colSpan={10} className="h-24 text-center">
+                  No artists found
                 </TableCell>
               </TableRow>
             )}

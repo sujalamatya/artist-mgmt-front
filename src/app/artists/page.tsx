@@ -47,7 +47,7 @@ export default function Artist() {
           <div className=" w-full h-full gap-4 p-4 mt-10">
             <div className="flex justify-end">
               <Link href="/artists/add">
-                <Button className="mr-5">
+                <Button className="mr-16" variant={"outline"}>
                   <Plus className="mr-2 h-4 w-4" />
                   Add Artist
                 </Button>
