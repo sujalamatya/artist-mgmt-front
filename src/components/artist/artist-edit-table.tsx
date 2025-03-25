@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+
 import { useRouter, useParams } from "next/navigation";
+
 import { fetchArtistById, updateArtist } from "@/api/api";
 import { toast } from "react-toastify";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -17,15 +19,26 @@ export default function EditArtist() {
     dob: "",
     gender: "",
     address: "",
-    first_release_year: 0,
-    no_of_albums: 0,
+    first_release_year: "",
+    no_of_albums: "",
+    image: null as File | null,
   });
+  const [preview, setPreview] = useState<string | null>(null);
 
   useEffect(() => {
     const getArtist = async () => {
       try {
         const data = await fetchArtistById(Number(id));
-        setArtist(data);
+        setArtist({
+          name: data.name,
+          dob: data.dob,
+          gender: data.gender,
+          address: data.address,
+          first_release_year: data.first_release_year.toString(),
+          no_of_albums: data.no_of_albums.toString(),
+          image: null,
+        });
+        setPreview(data.image || null);
       } catch (error) {
         console.error("Error fetching artist:", error);
         toast.error("Failed to fetch artist details.");
@@ -39,12 +52,31 @@ export default function EditArtist() {
     setArtist((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      setArtist((prev) => ({ ...prev, image: file }));
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const formData = new FormData();
+    formData.append("name", artist.name);
+    formData.append("dob", artist.dob);
+    formData.append("gender", artist.gender);
+    formData.append("address", artist.address);
+    formData.append("first_release_year", artist.first_release_year);
+    formData.append("no_of_albums", artist.no_of_albums);
+    if (artist.image) {
+      formData.append("image", artist.image);
+    }
+
     try {
-      await updateArtist(Number(id), artist);
+      await updateArtist(Number(id), formData);
       toast.success("Artist updated successfully!");
-      router.push("/artists"); // Redirect to the artists table
+      router.push("/artists");
     } catch (error) {
       console.error("Error updating artist:", error);
       toast.error("Failed to update artist.");
@@ -126,6 +158,22 @@ export default function EditArtist() {
                 placeholder="Enter number of albums"
                 required
               />
+            </div>
+            <div>
+              <Label htmlFor="image">Artist Image</Label>
+              <Input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+              {preview && (
+                <img
+                  src={preview}
+                  alt="Artist Preview"
+                  className="mt-2 w-40 h-40 object-cover rounded-md"
+                />
+              )}
             </div>
             <Button type="submit" className="w-full">
               Update Artist

@@ -119,6 +119,9 @@ export default function ArtistProfileSongs() {
           )}
         </CardContent>
       </Card>
+      <Button className="p-4 m-5" variant={"outline"} onClick={() => {}}>
+        Add Song
+      </Button>
     </div>
   );
 }

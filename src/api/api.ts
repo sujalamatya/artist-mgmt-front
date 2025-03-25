@@ -169,43 +169,46 @@ export const searchSongsById = async (query: string, artistId: number) => {
 };
 
 // Create a new artist (Requires Authorization)
-export const createArtist = async (artistData: IArtist) => {
-  try {
-    // Retrieve user info from session storage
-    const userString = sessionStorage.getItem("user");
-    const user: IUser | null = userString ? JSON.parse(userString) : null;
+export const createArtist = async (formData: FormData) => {
+  const token = localStorage.getItem("token");
 
-    // If the user is an artist, set user_id from session storage
-    if (user && user.role === "artist") {
-      artistData.id = user.id; // Store user_id in artistData
-    }
+  const response = await fetch(`${ARTIST_API_BASE_URL}/artists/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData, // No Content-Type header - let the browser set it with boundary
+  });
 
-    const response = await axiosInstance.post<IArtist>(
-      `${ARTIST_API_BASE_URL}/artists/`,
-      artistData
-    );
-    return response.data;
-  } catch (error: any) {
-    throw error.response ? error.response.data : error.message;
+  if (!response.ok) {
+    throw new Error("Failed to create artist");
   }
+
+  return response.json();
 };
 // Update an artist by ID (Requires Authorization)
 export const updateArtist = async (
   id: number,
-  artistData: Partial<{
-    name: string;
-    dob: string;
-    address: string;
-    gender: string;
-    first_release_year: number;
-    no_of_albums: number;
-  }>
+  artistData:
+    | FormData
+    | Partial<{
+        name: string;
+        dob: string;
+        address: string;
+        gender: string;
+        first_release_year: number;
+        no_of_albums: number;
+      }>
 ) => {
   try {
+    const isFormData = artistData instanceof FormData;
+
     const response = await axiosInstance.put(
       `${ARTIST_API_BASE_URL}/artists/${id}/`,
-      artistData
+      artistData,
+      isFormData ? { headers: { "Content-Type": "multipart/form-data" } } : {}
     );
+
     return response.data;
   } catch (error: any) {
     throw error.response ? error.response.data : error.message;

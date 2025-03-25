@@ -17,6 +17,7 @@ export interface IArtist {
   gender: string;
   first_release_year: number;
   no_of_albums: number;
+  image: File | string;
 }
 
 export interface IUser {

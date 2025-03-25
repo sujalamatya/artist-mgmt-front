@@ -20,24 +20,40 @@ export default function AddArtist() {
     first_release_year: 0,
     no_of_albums: 0,
   });
+  const [image, setImage] = useState<File | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setArtist((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createArtist(artist);
+      const formData = new FormData();
+
+      Object.entries(artist).forEach(([key, value]) => {
+        formData.append(key, value.toString());
+      });
+
+      if (image) {
+        formData.append("image", image); // Attach file correctly
+      }
+
+      await createArtist(formData);
       toast.success("Artist added successfully!");
-      router.push("/artists"); // Redirect to the artists table
+      router.push("/artists");
     } catch (error) {
       console.error("Error adding artist:", error);
       toast.error("Failed to add artist.");
     }
   };
-
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
       <Card>
@@ -112,6 +128,16 @@ export default function AddArtist() {
                 onChange={handleChange}
                 placeholder="Enter number of albums"
                 required
+              />
+            </div>
+            <div>
+              <Label htmlFor="image">Artist Image</Label>
+              <Input
+                id="image"
+                type="file"
+                name="image"
+                onChange={handleImageChange}
+                accept="image/*"
               />
             </div>
             <Button type="submit" className="w-full">
