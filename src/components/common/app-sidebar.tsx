@@ -67,7 +67,17 @@ const getNavItems = (role: string) => {
       eventsItem,
       settingsItem,
     ];
-  } else if (role === "super_admin" || "artist_manager") {
+  } else if (role === "super_admin") {
+    return [
+      dashboardItem,
+      { title: "Artists", url: "/artists", icon: User },
+      { title: "Music", url: "/music", icon: Music },
+      { title: "Albums", url: "/albums", icon: Library },
+      { title: "Users", url: "/users", icon: User },
+      eventsItem,
+      settingsItem,
+    ];
+  } else if (role === "artist_manager") {
     return [
       dashboardItem,
       { title: "Artists", url: "/artists", icon: User },
@@ -82,7 +92,6 @@ const getNavItems = (role: string) => {
   }
 };
 
-// AppSidebar component
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const [userRole, setUserRole] = useState<string | null>(null);
 
