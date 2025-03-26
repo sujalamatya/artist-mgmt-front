@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+
 import {
   Table,
   TableBody,
@@ -14,13 +15,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Search } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function ArtistProfileSongs() {
   const params = useParams();
   const id = params.id as string;
-
+  const router = useRouter();
   const [songs, setSongs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -74,7 +75,6 @@ export default function ArtistProfileSongs() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center w-full max-w-sm space-x-2 rounded-lg border px-3.5 py-2 mb-4">
-            <Search className="h-4 w-4" />
             <Input
               type="search"
               placeholder="Search"
@@ -82,11 +82,14 @@ export default function ArtistProfileSongs() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key == "Enter") {
+                if (e.key === "Enter") {
                   handleSearch();
                 }
               }}
             />
+            <Button variant="ghost" size="icon" onClick={handleSearch}>
+              <Search className="h-4 w-4" />
+            </Button>
             {/* <Button onClick={handleSearch}>Search</Button> */}
           </div>
           {songs.length > 0 ? (
@@ -117,6 +120,13 @@ export default function ArtistProfileSongs() {
           )}
         </CardContent>
       </Card>
+      <Button
+        className="p-4 m-5"
+        variant={"outline"}
+        onClick={() => router.push(`/artists/${id}/add`)}
+      >
+        Add Song
+      </Button>
     </div>
   );
 }

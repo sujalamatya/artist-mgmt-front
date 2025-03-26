@@ -65,7 +65,6 @@ export default function MusicTable() {
   return (
     <div className="flex flex-col  w-full max-w-8xl mx-auto p-4">
       <div className="flex items-center w-full max-w-sm space-x-2 rounded-lg border px-3.5 py-2 mb-4">
-        <Search className="h-4 w-4" />
         <Input
           type="search"
           placeholder="Search"
@@ -73,11 +72,14 @@ export default function MusicTable() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key == "Enter") {
+            if (e.key === "Enter") {
               handleSearch();
             }
           }}
         />
+        <Button variant="ghost" size="icon" onClick={handleSearch}>
+          <Search className="h-4 w-4" />
+        </Button>
       </div>
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="rounded-lg border shadow-md overflow-hidden">

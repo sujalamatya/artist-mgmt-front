@@ -61,13 +61,23 @@ export default function ViewArtist() {
     <div className="w-[500px] max-w-7xl mx-auto p-4">
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={artist.avatar_url || ""} alt="Artist Avatar" />
-              <AvatarFallback className="text-2xl font-semibold">
-                {artist.name.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+          <div className="flex justify-center flex-col items-center space-x-4">
+            <div>
+              <Avatar className="h-[200px] w-[200px]">
+                <AvatarImage
+                  src={
+                    artist.image
+                      ? `http://localhost:8000${artist.image}`
+                      : "/placeholder.png"
+                  }
+                  alt={artist.name}
+                />
+                <AvatarFallback className="text-2xl font-semibold">
+                  {artist.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+
             <div>
               <CardTitle className="text-2xl font-bold">
                 {artist.name}
