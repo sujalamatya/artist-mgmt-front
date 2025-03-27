@@ -1,14 +1,15 @@
 "use client"; // Ensure this runs only on the client side
 
-import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/common/app-sidebar";
 import Navbar from "@/components/common/nav-bar";
 import ImageCarousel from "@/components/dashboard/main-pics";
-import { TotalArtists } from "@/components/dashboard/total-artist";
 import { TotalAlbums } from "@/components/dashboard/total-album";
+import { TotalArtists } from "@/components/dashboard/total-artist";
+import { useEffect, useState } from "react";
 // import { MySongs } from "@/components/dashboard/my-songs";
 // import { MyAlbums } from "@/components/dashboard/my-albums";
 import { MusicGenresChart } from "@/components/dashboard/music-genre-chart";
+import { MyMusicChart } from "@/components/dashboard/my-music-genre-chart";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -62,9 +63,9 @@ export default function Page() {
           <div className="p-4">
             <ImageCarousel />
             <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 mt-6">
-              <MusicGenresChart />
               {userRole === "artist" ? (
                 <>
+                  <MyMusicChart />
                   <div>My songs</div>
                   <div>My albums</div>
                   {/* <MySongs />
@@ -72,6 +73,7 @@ export default function Page() {
                 </>
               ) : (
                 <>
+                  <MusicGenresChart />
                   <TotalArtists />
                   <TotalAlbums />
                 </>
