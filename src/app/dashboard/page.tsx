@@ -23,6 +23,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { MyTotalSongs } from "@/components/dashboard/my-total-songs";
 
 export default function Page() {
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -66,7 +67,7 @@ export default function Page() {
               {userRole === "artist" ? (
                 <>
                   <MyMusicChart />
-                  <div>My songs</div>
+                  <MyTotalSongs />
                   <div>My albums</div>
                   {/* <MySongs />
                   <MyAlbums /> */}
