@@ -1,4 +1,4 @@
-"use client"; // Ensure this runs only on the client side
+"use client";
 
 import { AppSidebar } from "@/components/common/app-sidebar";
 import Navbar from "@/components/common/nav-bar";
@@ -6,10 +6,10 @@ import ImageCarousel from "@/components/dashboard/main-pics";
 import { TotalAlbums } from "@/components/dashboard/total-album";
 import { TotalArtists } from "@/components/dashboard/total-artist";
 import { useEffect, useState } from "react";
-// import { MySongs } from "@/components/dashboard/my-songs";
-// import { MyAlbums } from "@/components/dashboard/my-albums";
 import { MusicGenresChart } from "@/components/dashboard/music-genre-chart";
 import { MyMusicChart } from "@/components/dashboard/my-music-genre-chart";
+import { MyTotalAlbums } from "@/components/dashboard/my-total-alnums";
+import { MyTotalSongs } from "@/components/dashboard/my-total-songs";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -23,7 +23,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { MyTotalSongs } from "@/components/dashboard/my-total-songs";
 
 export default function Page() {
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -68,9 +67,7 @@ export default function Page() {
                 <>
                   <MyMusicChart />
                   <MyTotalSongs />
-                  <div>My albums</div>
-                  {/* <MySongs />
-                  <MyAlbums /> */}
+                  <MyTotalAlbums />
                 </>
               ) : (
                 <>
