@@ -290,3 +290,19 @@ export const addArtistSong = async (songData: {
     throw error.response?.data || error.message;
   }
 };
+
+// Fetch all users
+export const fetchUsers = async (): Promise<any[]> => {
+  try {
+    const response = await axiosInstance.get(`${API_BASE_URL}/users/`);
+    return response.data;
+  } catch (error: any) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Delete a user
+export const deleteUser = async (id: number): Promise<string> => {
+  const response = await axiosInstance.delete(`${API_BASE_URL}/users/${id}/`);
+  return response.data?.message || "User deleted successfully";
+};

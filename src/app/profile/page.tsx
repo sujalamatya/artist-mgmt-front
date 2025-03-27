@@ -1,8 +1,22 @@
 "use client";
 
-import { createArtist, fetchArtists } from "@/api/api"; // Import fetchArtists
+import { createArtist, fetchArtists } from "@/api/api";
 import Navbar from "@/components/common/nav-bar";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,32 +25,20 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Calendar } from "@/components/ui/calendar"; // shadcn Date Picker
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"; // For Date Picker
-import { format } from "date-fns"; // For formatting dates
-import { Calendar as CalendarIcon } from "lucide-react"; // Calendar icon
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"; // shadcn Select
-import { Checkbox } from "@/components/ui/checkbox"; // shadcn Checkbox
+} from "@/components/ui/select";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 export default function ProfilePage() {
+  const { theme } = useTheme();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [user, setUser] = useState<{
     first_name: string;
     last_name: string;
@@ -46,6 +48,7 @@ export default function ProfilePage() {
     gender: string;
     address: string;
     role: string;
+    profile_image?: string;
   } | null>(null);
 
   const [artistData, setArtistData] = useState({
@@ -59,15 +62,26 @@ export default function ProfilePage() {
   });
 
   const [completionPercentage, setCompletionPercentage] = useState(0);
-  const [artistExists, setArtistExists] = useState(false); // New state to track if artist exists
+  const [artistExists, setArtistExists] = useState(false);
+
+  // Define checkIfArtistExists before it's used in useEffect
+  const checkIfArtistExists = async (name: string) => {
+    try {
+      const artists = await fetchArtists();
+      const exists = artists.some((artist: any) => artist.name === name);
+      setArtistExists(exists);
+    } catch (error) {
+      console.error("Error fetching artists:", error);
+    }
+  };
 
   useEffect(() => {
+    setMounted(true);
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
 
-      // Autofill form with user data but allow editing
       setArtistData({
         name: `${parsedUser.first_name} ${parsedUser.last_name}` || "",
         dob: parsedUser.dob || "",
@@ -78,22 +92,11 @@ export default function ProfilePage() {
         released: false,
       });
 
-      // Check if artist with the same name already exists
       checkIfArtistExists(`${parsedUser.first_name} ${parsedUser.last_name}`);
     } else {
-      router.push("/login"); // Redirect to login if user is not logged in
+      router.push("/login");
     }
   }, [router]);
-
-  const checkIfArtistExists = async (name: string) => {
-    try {
-      const artists = await fetchArtists();
-      const exists = artists.some((artist: any) => artist.name === name);
-      setArtistExists(exists);
-    } catch (error) {
-      console.error("Error fetching artists:", error);
-    }
-  };
 
   useEffect(() => {
     calculateCompletionPercentage();
@@ -120,7 +123,7 @@ export default function ProfilePage() {
     if (date) {
       setArtistData((prev) => ({
         ...prev,
-        dob: format(date, "yyyy-MM-dd"), // Format date to match input type="date"
+        dob: format(date, "yyyy-MM-dd"),
       }));
     }
   };
@@ -141,21 +144,38 @@ export default function ProfilePage() {
         no_of_albums: Number(artistData.no_of_albums),
       });
       alert("Artist profile created successfully!");
-      setArtistExists(true); // Set artistExists to true after successful creation
+      setArtistExists(true);
     } catch (error) {
       console.error("Error creating artist:", error);
       alert("Failed to create artist profile.");
     }
   };
 
-  if (!user) return null; // Prevent rendering until user data is loaded
+  if (!mounted || !user) return null;
 
   const shouldShowForm =
     !["super_admin", "artist_manager"].includes(user.role) && !artistExists;
 
+  // Theme-aware classes
+  const bgGradient =
+    theme === "dark"
+      ? "bg-gradient-to-b from-gray-900/50 to-gray-900/20"
+      : "bg-gradient-to-b from-gray-100/50 to-gray-100/20";
+
+  const cardBg = theme === "dark" ? "bg-gray-900/50" : "bg-gray-100/50";
+
+  const borderColor = theme === "dark" ? "border-gray-800" : "border-gray-200";
+
+  const textSecondary = theme === "dark" ? "text-gray-400" : "text-gray-600";
+
   return (
-    <div className="flex flex-col min-h-screen bg-background ">
-      {/* Header with Breadcrumb and Navbar */}
+    <div
+      className={cn(
+        "min-h-screen",
+        theme === "dark" ? "bg-black text-white" : "bg-white text-gray-900"
+      )}
+    >
+      {/* Header with blurred background */}
       <header className="flex h-16 shrink-0 items-center justify-between px-4 border-b bg-background">
         <Breadcrumb>
           <BreadcrumbList>
@@ -171,160 +191,203 @@ export default function ProfilePage() {
         <Navbar />
       </header>
 
-      {/* Profile Info Section */}
-      <main className="flex gap-6 p-6 max-w-7xl mx-auto w-full">
-        {/* Left Profile Card */}
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-center">
-              Profile Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center text-center">
-            <Avatar className="h-24 w-24">
-              <AvatarFallback className="bg-primary text-primary-foreground text-4xl font-bold">
+      <main className="p-6 max-w-7xl mx-auto">
+        {/* Profile header */}
+        <section className="flex flex-col md:flex-row items-center md:items-end gap-6 mb-8">
+          <Avatar className="h-48 w-48 rounded-none">
+            {user.profile_image ? (
+              <AvatarImage src={user.profile_image} />
+            ) : (
+              <AvatarFallback
+                className={cn(
+                  "text-8xl font-bold rounded-none",
+                  theme === "dark"
+                    ? "bg-gradient-to-br from-purple-600 to-blue-500"
+                    : "bg-gradient-to-br from-purple-400 to-blue-300"
+                )}
+              >
                 {user.first_name[0].toUpperCase()}
               </AvatarFallback>
-            </Avatar>
-            <h1 className="text-2xl font-bold mt-4">
+            )}
+          </Avatar>
+
+          <div className="space-y-2 md:space-y-4 text-center md:text-left">
+            <p className="text-sm font-medium uppercase tracking-wider">
+              Profile
+            </p>
+            <h1 className="text-4xl md:text-6xl font-bold">
               {user.first_name} {user.last_name}
             </h1>
-            <p className="text-muted-foreground text-lg">{user.role}</p>
-            <Separator className="my-4" />
+            <p className={textSecondary}>{user.role}</p>
+          </div>
+        </section>
 
-            <div className="text-left w-full space-y-3">
-              <p>
-                <span className="font-medium">Email:</span> {user.email}
-              </p>
-              <p>
-                <span className="font-medium">Phone:</span> {user.phone}
-              </p>
-              <p>
-                <span className="font-medium">Date of Birth:</span> {user.dob}
-              </p>
-              <p>
-                <span className="font-medium">Gender:</span> {user.gender}
-              </p>
-              <p>
-                <span className="font-medium">Address:</span> {user.address}
-              </p>
+        {/* Content section */}
+        <section className="mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Profile info card */}
+            <div className={cn("p-6 rounded-lg border", cardBg, borderColor)}>
+              <h2 className="text-2xl font-bold mb-4">About</h2>
+              <div className="space-y-4">
+                {[
+                  { label: "Email", value: user.email },
+                  { label: "Phone", value: user.phone },
+                  { label: "Date of Birth", value: user.dob },
+                  { label: "Gender", value: user.gender },
+                  { label: "Address", value: user.address },
+                ].map((item) => (
+                  <div key={item.label}>
+                    <p className={cn("text-sm", textSecondary)}>{item.label}</p>
+                    <p>{item.value || "-"}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Right Form Card - Conditionally Rendered */}
-        {shouldShowForm && (
-          <Card className="w-full">
-            <CardHeader>
-              <CardTitle className="text-2xl font-semibold text-center">
-                Create Artist Profile
-              </CardTitle>
-              <p className="text-center text-sm text-muted-foreground">
-                Profile Completion: {completionPercentage}%
-              </p>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="name">Name</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    value={artistData.name}
-                    onChange={handleChange}
-                    placeholder="Enter your full name"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="dob">Date of Birth</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal"
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {artistData.dob
-                          ? format(new Date(artistData.dob), "PPP")
-                          : "Pick a date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={
-                          artistData.dob ? new Date(artistData.dob) : undefined
-                        }
-                        onSelect={handleDateChange}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                <div>
-                  <Label htmlFor="address">Address</Label>
-                  <Input
-                    id="address"
-                    name="address"
-                    value={artistData.address}
-                    onChange={handleChange}
-                    placeholder="Enter your address"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="gender">Gender</Label>
-                  <Select
-                    onValueChange={handleSelectChange}
-                    value={artistData.gender}
+            {/* Artist form */}
+            {shouldShowForm && (
+              <div className={cn("p-6 rounded-lg border", cardBg, borderColor)}>
+                <h2 className="text-2xl font-bold mb-4">
+                  Create Artist Profile
+                </h2>
+                <div className="mb-4">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className={cn("text-sm", textSecondary)}>
+                      Profile Completion
+                    </span>
+                    <span className="text-sm">{completionPercentage}%</span>
+                  </div>
+                  <div
+                    className={cn(
+                      "w-full rounded-full h-2",
+                      theme === "dark" ? "bg-gray-700" : "bg-gray-300"
+                    )}
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select your gender" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <div
+                      className={cn(
+                        "h-2 rounded-full",
+                        theme === "dark" ? "bg-green-500" : "bg-green-600"
+                      )}
+                      style={{ width: `${completionPercentage}%` }}
+                    ></div>
+                  </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="first_release_year">First Release Year</Label>
-                  <Input
-                    id="first_release_year"
-                    name="first_release_year"
-                    value={artistData.first_release_year}
-                    onChange={handleChange}
-                    type="number"
-                    placeholder="Enter first release year"
-                    required
-                  />
-                </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="name">Name</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      value={artistData.name}
+                      onChange={handleChange}
+                      placeholder="Enter your full name"
+                      required
+                    />
+                  </div>
 
-                <div>
-                  <Label htmlFor="no_of_albums">Number of Albums</Label>
-                  <Input
-                    id="no_of_albums"
-                    name="no_of_albums"
-                    value={artistData.no_of_albums}
-                    onChange={handleChange}
-                    type="number"
-                    placeholder="Enter number of albums"
-                    required
-                  />
-                </div>
-                <Button type="submit" className="w-full">
-                  Submit
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        )}
+                  <div>
+                    <Label>Date of Birth</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {artistData.dob
+                            ? format(new Date(artistData.dob), "PPP")
+                            : "Pick a date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            artistData.dob
+                              ? new Date(artistData.dob)
+                              : undefined
+                          }
+                          onSelect={handleDateChange}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="address">Address</Label>
+                    <Input
+                      id="address"
+                      name="address"
+                      value={artistData.address}
+                      onChange={handleChange}
+                      placeholder="Enter your address"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="gender">Gender</Label>
+                    <Select
+                      onValueChange={handleSelectChange}
+                      value={artistData.gender}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="first_release_year">
+                      First Release Year
+                    </Label>
+                    <Input
+                      id="first_release_year"
+                      name="first_release_year"
+                      value={artistData.first_release_year}
+                      onChange={handleChange}
+                      type="number"
+                      placeholder="Enter first release year"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="no_of_albums">Number of Albums</Label>
+                    <Input
+                      id="no_of_albums"
+                      name="no_of_albums"
+                      value={artistData.no_of_albums}
+                      onChange={handleChange}
+                      type="number"
+                      placeholder="Enter number of albums"
+                      required
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className={cn(
+                      "w-full font-bold py-3 rounded-full",
+                      theme === "dark"
+                        ? "bg-green-600 hover:bg-green-700"
+                        : "bg-green-500 hover:bg-green-600"
+                    )}
+                  >
+                    Submit
+                  </Button>
+                </form>
+              </div>
+            )}
+          </div>
+        </section>
       </main>
     </div>
   );
