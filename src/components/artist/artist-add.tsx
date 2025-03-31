@@ -48,7 +48,7 @@ export default function AddArtist() {
 
       await createArtist(formData);
       toast.success("Artist added successfully!");
-      router.push("/artists");
+      router.back();
     } catch (error) {
       console.error("Error adding artist:", error);
       toast.error("Failed to add artist.");

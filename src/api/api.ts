@@ -107,7 +107,17 @@ export const fetchArtists = async () => {
     throw error.response ? error.response.data : error.message;
   }
 };
-
+// Fetch artists by user ID
+export const fetchArtistsByUserId = async (Id: number) => {
+  try {
+    const response = await axiosInstance.get(
+      `${ARTIST_API_BASE_URL}/users/${Id}/artists/`
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
 // Fetch single artist by ID (Requires Authorization)
 export const fetchArtistById = async (id: number) => {
   try {

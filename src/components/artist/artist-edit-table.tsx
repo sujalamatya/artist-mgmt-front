@@ -76,7 +76,7 @@ export default function EditArtist() {
     try {
       await updateArtist(Number(id), formData);
       toast.success("Artist updated successfully!");
-      router.push("/artists");
+      router.back();
     } catch (error) {
       console.error("Error updating artist:", error);
       toast.error("Failed to update artist.");

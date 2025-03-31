@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import MyArtistsTable from "@/components/artist/my-artist-table";
 
 export default function Artist() {
   return (
@@ -31,7 +32,7 @@ export default function Artist() {
               <Breadcrumb className="top-0">
                 <BreadcrumbList>
                   <BreadcrumbItem className="hidden md:block">
-                    <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                    <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
@@ -53,7 +54,7 @@ export default function Artist() {
                 </Button>
               </Link>
             </div>
-            <ArtistTable />
+            <MyArtistsTable />
           </div>
         </SidebarInset>
       </SidebarProvider>
