@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/select";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import { toast } from "react-toastify";
 
 export default function ProfilePage() {
   const { theme } = useTheme();
@@ -58,13 +59,12 @@ export default function ProfilePage() {
     gender: "",
     first_release_year: "",
     no_of_albums: "",
-    released: false,
   });
 
+  const [image, setImage] = useState<File | null>(null);
   const [completionPercentage, setCompletionPercentage] = useState(0);
   const [artistExists, setArtistExists] = useState(false);
 
-  // Define checkIfArtistExists before it's used in useEffect
   const checkIfArtistExists = async (name: string) => {
     try {
       const artists = await fetchArtists();
@@ -89,7 +89,6 @@ export default function ProfilePage() {
         gender: parsedUser.gender || "",
         first_release_year: "",
         no_of_albums: "",
-        released: false,
       });
 
       checkIfArtistExists(`${parsedUser.first_name} ${parsedUser.last_name}`);
@@ -105,18 +104,24 @@ export default function ProfilePage() {
   const calculateCompletionPercentage = () => {
     const totalFields = Object.keys(artistData).length;
     const filledFields = Object.values(artistData).filter(
-      (value) => value !== "" && value !== false
+      (value) => value !== ""
     ).length;
     const percentage = (filledFields / totalFields) * 100;
     setCompletionPercentage(Math.round(percentage));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setArtistData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
     }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
   };
 
   const handleDateChange = (date: Date | undefined) => {
@@ -138,16 +143,24 @@ export default function ProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createArtist({
-        ...artistData,
-        first_release_year: Number(artistData.first_release_year),
-        no_of_albums: Number(artistData.no_of_albums),
+      const formData = new FormData();
+
+      // Append all artist data to formData
+      Object.entries(artistData).forEach(([key, value]) => {
+        formData.append(key, value);
       });
-      alert("Artist profile created successfully!");
+
+      // Append image if exists
+      if (image) {
+        formData.append("image", image);
+      }
+
+      await createArtist(formData);
+      toast.success("Artist profile created successfully!");
       setArtistExists(true);
     } catch (error) {
       console.error("Error creating artist:", error);
-      alert("Failed to create artist profile.");
+      toast.error("Failed to create artist profile.");
     }
   };
 
@@ -369,6 +382,17 @@ export default function ProfilePage() {
                       type="number"
                       placeholder="Enter number of albums"
                       required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="image">Artist Image</Label>
+                    <Input
+                      id="image"
+                      type="file"
+                      name="image"
+                      onChange={handleImageChange}
+                      accept="image/*"
                     />
                   </div>
 
