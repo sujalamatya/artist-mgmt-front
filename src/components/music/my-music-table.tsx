@@ -1,7 +1,12 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { deleteSong, fetchMyMusic, searchMyMusic } from "@/api/api";
+import {
+  deleteSong,
+  fetchMyMusic,
+  searchMyMusic,
+  fetchArtists,
+} from "@/api/api";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -25,23 +30,45 @@ import { Skeleton } from "../ui/skeleton";
 
 export default function MyMusicTable() {
   const [songs, setSongs] = useState<any[]>([]);
+  const [artists, setArtists] = useState<Record<number, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [role, setRole] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
-    const getSongs = async () => {
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setRole(user.role);
+    }
+
+    const getSongsAndArtists = async () => {
       try {
-        const data = await fetchMyMusic();
-        setSongs(data);
+        const [songsData, artistsData] = await Promise.all([
+          fetchMyMusic(),
+          fetchArtists(),
+        ]);
+
+        setSongs(songsData);
+
+        const artistMap = artistsData.reduce(
+          (acc: Record<number, string>, artist: any) => {
+            acc[artist.id] = artist.name;
+            return acc;
+          },
+          {}
+        );
+
+        setArtists(artistMap);
       } catch (error) {
-        console.error("Error fetching songs:", error);
-        toast.error("Failed to load songs");
+        console.error("Error fetching data:", error);
+        toast.error("Failed to load data");
       } finally {
         setIsLoading(false);
       }
     };
-    getSongs();
+    getSongsAndArtists();
   }, []);
 
   const handleSearch = async () => {
@@ -92,13 +119,6 @@ export default function MyMusicTable() {
             }}
           />
         </div>
-        <Button
-          onClick={() => router.push("/my-music/add")}
-          className="w-full md:w-auto"
-          variant={"outline"}
-        >
-          Add New Song
-        </Button>
       </div>
 
       <ToastContainer position="top-right" autoClose={3000} />
@@ -110,30 +130,33 @@ export default function MyMusicTable() {
           </TableCaption>
           <TableHeader className="bg-muted/50">
             <TableRow>
-              <TableHead className="w-[25%]">Title</TableHead>
+              <TableHead className="w-[20%]">Title</TableHead>
+              {role === "artist_manager" && (
+                <TableHead className="w-[20%]">Artist</TableHead>
+              )}
               <TableHead className="w-[20%]">Album</TableHead>
               <TableHead className="w-[15%]">Genre</TableHead>
               <TableHead className="w-[15%]">Created</TableHead>
-              <TableHead className="w-[15%]">Updated</TableHead>
               <TableHead className="w-[10%] text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              // Loading skeleton
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
                   <TableCell>
                     <Skeleton className="h-4 w-[80%]" />
                   </TableCell>
+                  {role === "artist_manager" && (
+                    <TableCell>
+                      <Skeleton className="h-4 w-[80%]" />
+                    </TableCell>
+                  )}
                   <TableCell>
                     <Skeleton className="h-4 w-[60%]" />
                   </TableCell>
                   <TableCell>
                     <Skeleton className="h-4 w-[50%]" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-[70%]" />
                   </TableCell>
                   <TableCell>
                     <Skeleton className="h-4 w-[70%]" />
@@ -147,13 +170,15 @@ export default function MyMusicTable() {
               songs.map((song) => (
                 <TableRow key={song.id} className="hover:bg-muted/50">
                   <TableCell className="font-medium">{song.title}</TableCell>
+                  {role === "artist_manager" && (
+                    <TableCell>
+                      {artists[song.artist_id] || "Unknown"}
+                    </TableCell>
+                  )}
                   <TableCell>{song.album_name || "-"}</TableCell>
                   <TableCell>{song.genre}</TableCell>
                   <TableCell>
                     {new Date(song.created_at).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    {new Date(song.updated_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -168,15 +193,13 @@ export default function MyMusicTable() {
                           onClick={() => handleView(song.id)}
                           className="cursor-pointer"
                         >
-                          <Eye className="mr-2 h-4 w-4" />
-                          View Details
+                          <Eye className="mr-2 h-4 w-4" /> View Details
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleDelete(song.id)}
                           className="cursor-pointer text-destructive focus:text-destructive"
                         >
-                          <Trash className="mr-2 h-4 w-4" />
-                          Delete
+                          <Trash className="mr-2 h-4 w-4" /> Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

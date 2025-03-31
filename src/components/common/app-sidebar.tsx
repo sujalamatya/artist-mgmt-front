@@ -63,7 +63,7 @@ const getNavItems = (role: string) => {
     return [
       dashboardItem,
       { title: "MyMusic", url: "/my-music", icon: Music },
-      { title: "MyAlbums", url: "/my-albums", icon: Library },
+      // { title: "MyAlbums", url: "/my-albums", icon: Library },
       eventsItem,
       settingsItem,
     ];
@@ -72,7 +72,7 @@ const getNavItems = (role: string) => {
       dashboardItem,
       { title: "Artists", url: "/artists", icon: User },
       { title: "Music", url: "/music", icon: Music },
-      { title: "Albums", url: "/albums", icon: Library },
+      // { title: "Albums", url: "/albums", icon: Library },
       { title: "Users", url: "/users", icon: User },
       eventsItem,
       settingsItem,
@@ -80,9 +80,9 @@ const getNavItems = (role: string) => {
   } else if (role === "artist_manager") {
     return [
       dashboardItem,
-      { title: "Artists", url: "/artists", icon: User },
-      { title: "Music", url: "/music", icon: Music },
-      { title: "Albums", url: "/albums", icon: Library },
+      { title: "Artists", url: "/my-artist", icon: User },
+      { title: "Music", url: "/my-music", icon: Music },
+      // { title: "Albums", url: "/albums", icon: Library },
       eventsItem,
       settingsItem,
     ];

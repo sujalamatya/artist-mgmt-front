@@ -1,8 +1,8 @@
 import axios from "axios";
 import { setCookie, getCookie } from "@/actions/cookies";
 import { IArtist, IUser, ILoginCredentials } from "@/types/types";
-const API_BASE_URL = "http://localhost:8000/api/user";
-const ARTIST_API_BASE_URL = "http://127.0.0.1:8000/api/artist";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const ARTIST_API_BASE_URL = process.env.NEXT_PUBLIC_ARTIST_API_BASE_URL;
 const getAuthToken = async () => {
   return await getCookie("access_token");
 };
@@ -107,7 +107,17 @@ export const fetchArtists = async () => {
     throw error.response ? error.response.data : error.message;
   }
 };
-
+// Fetch artists by user ID
+export const fetchArtistsByUserId = async (Id: number) => {
+  try {
+    const response = await axiosInstance.get(
+      `${ARTIST_API_BASE_URL}/users/${Id}/artists/`
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
 // Fetch single artist by ID (Requires Authorization)
 export const fetchArtistById = async (id: number) => {
   try {
@@ -170,21 +180,27 @@ export const searchSongsById = async (query: string, artistId: number) => {
 
 // Create a new artist (Requires Authorization)
 export const createArtist = async (formData: FormData) => {
-  const token = localStorage.getItem("token");
-
-  const response = await fetch(`${ARTIST_API_BASE_URL}/artists/`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    body: formData, // No Content-Type header - let the browser set it with boundary
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to create artist");
+  try {
+    const response = await axiosInstance.post(
+      `${ARTIST_API_BASE_URL}/artists/`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      if (error.response.status === 401) {
+        // Handle unauthorized (token might be expired)
+        throw new Error("Your session has expired. Please log in again.");
+      }
+      throw error.response.data;
+    }
+    throw new Error(error.message || "Failed to create artist");
   }
-
-  return response.json();
 };
 // Update an artist by ID (Requires Authorization)
 export const updateArtist = async (
