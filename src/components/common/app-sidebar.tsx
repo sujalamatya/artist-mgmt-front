@@ -80,7 +80,7 @@ const getNavItems = (role: string) => {
   } else if (role === "artist_manager") {
     return [
       dashboardItem,
-      { title: "Artists", url: "/artists", icon: User },
+      { title: "Artists", url: "/my-artist", icon: User },
       { title: "Music", url: "/music", icon: Music },
       { title: "Albums", url: "/albums", icon: Library },
       eventsItem,
