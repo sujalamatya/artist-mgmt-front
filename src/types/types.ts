@@ -1,3 +1,4 @@
+import { z } from "zod";
 export interface ILoginCredentials {
   email: string;
   password: string;
@@ -42,4 +43,25 @@ export interface IAPIResponse<T> {
   success: boolean;
   message?: string;
   data?: T;
+}
+
+export const eventFormSchema = z.object({
+  artist_id: z.number().min(1, "Artist ID is required"),
+  user_id: z.number().min(1, "User ID is required"),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  event_date: z.date(),
+  location: z.string().optional(),
+});
+
+export type EventFormValues = z.infer<typeof eventFormSchema>;
+
+export interface Event {
+  id: number;
+  artist_id: number;
+  user_id: number;
+  title: string;
+  description?: string;
+  event_date: string;
+  location?: string;
 }
