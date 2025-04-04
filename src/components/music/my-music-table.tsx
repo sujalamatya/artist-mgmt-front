@@ -45,13 +45,15 @@ export default function MyMusicTable() {
 
     const getSongsAndArtists = async () => {
       try {
-        const [songsData, artistsData] = await Promise.all([
+        const [songsData, artistsResponse] = await Promise.all([
           fetchMyMusic(),
-          fetchArtists(),
+          fetchArtists(1, 100), // Fetch first 100 artists
         ]);
 
         setSongs(songsData);
 
+        // Handle paginated artists response
+        const artistsData = artistsResponse.artists || [];
         const artistMap = artistsData.reduce(
           (acc: Record<number, string>, artist: any) => {
             acc[artist.id] = artist.name;
