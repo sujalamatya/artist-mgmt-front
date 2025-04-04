@@ -1,8 +1,12 @@
 import axios from "axios";
 import { setCookie, getCookie } from "@/actions/cookies";
 import { IArtist, IUser, ILoginCredentials } from "@/types/types";
+import { Event } from "@/types/types";
+import { toast } from "sonner";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const ARTIST_API_BASE_URL = process.env.NEXT_PUBLIC_ARTIST_API_BASE_URL;
+const EVENT_API_BASE_URL = "http://localhost:8000/api/events/events/";
 const getAuthToken = async () => {
   return await getCookie("access_token");
 };
@@ -194,7 +198,6 @@ export const createArtist = async (formData: FormData) => {
   } catch (error: any) {
     if (error.response) {
       if (error.response.status === 401) {
-        // Handle unauthorized (token might be expired)
         throw new Error("Your session has expired. Please log in again.");
       }
       throw error.response.data;
@@ -321,4 +324,65 @@ export const fetchUsers = async (): Promise<any[]> => {
 export const deleteUser = async (id: number): Promise<string> => {
   const response = await axiosInstance.delete(`${API_BASE_URL}/users/${id}/`);
   return response.data?.message || "User deleted successfully";
+};
+
+//EVENT APIS
+export const fetchEvents = async (): Promise<Event[]> => {
+  try {
+    const response = await fetch(EVENT_API_BASE_URL);
+    if (!response.ok) throw new Error("Failed to fetch events");
+    return await response.json();
+  } catch (error) {
+    toast.error("Failed to load events");
+    throw error;
+  }
+};
+
+export const createEvent = async (data: Omit<Event, "id">): Promise<Event> => {
+  try {
+    const response = await fetch(EVENT_API_BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(response.statusText);
+    return await response.json();
+  } catch (error) {
+    toast.error("Failed to create event");
+    throw error;
+  }
+};
+
+export const updateEvent = async (
+  id: number,
+  data: Partial<Event>
+): Promise<Event> => {
+  try {
+    const response = await fetch(`${EVENT_API_BASE_URL}/${id}/`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(response.statusText);
+    return await response.json();
+  } catch (error) {
+    toast.error("Failed to update event");
+    throw error;
+  }
+};
+
+export const deleteEvent = async (id: number): Promise<void> => {
+  try {
+    const response = await fetch(`${EVENT_API_BASE_URL}/${id}/`, {
+      method: "DELETE",
+    });
+    if (!response.ok) throw new Error("Failed to delete event");
+  } catch (error) {
+    toast.error("Failed to delete event");
+    throw error;
+  }
 };
