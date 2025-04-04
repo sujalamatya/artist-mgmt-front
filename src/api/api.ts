@@ -103,19 +103,28 @@ export const login = async (credentials: ILoginCredentials) => {
     throw error.response ? error.response.data : error.message;
   }
 };
-export const fetchArtists = async () => {
+
+// fetch artist with pagination
+export const fetchArtists = async (page = 1, pageSize = 10) => {
   try {
-    const response = await axiosInstance.get(`${ARTIST_API_BASE_URL}/artists/`);
+    const response = await axiosInstance.get(
+      `${ARTIST_API_BASE_URL}/artists/?page=${page}&page_size=${pageSize}`
+    );
     return response.data;
   } catch (error: any) {
     throw error.response ? error.response.data : error.message;
   }
 };
+
 // Fetch artists by user ID
-export const fetchArtistsByUserId = async (Id: number) => {
+export const fetchArtistsByUserId = async (
+  Id: number,
+  page = 1,
+  pageSize = 10
+) => {
   try {
     const response = await axiosInstance.get(
-      `${ARTIST_API_BASE_URL}/users/${Id}/artists/`
+      `${ARTIST_API_BASE_URL}/users/${Id}/artists/?page=${page}&page_size=${pageSize}`
     );
     return response.data;
   } catch (error: any) {
@@ -384,5 +393,53 @@ export const deleteEvent = async (id: number): Promise<void> => {
   } catch (error) {
     toast.error("Failed to delete event");
     throw error;
+  }
+};
+
+// Export music list as CSV
+export const exportMusicCSV = async () => {
+  try {
+    const response = await axiosInstance.get(
+      `${ARTIST_API_BASE_URL}/songs/?export=csv`,
+      {
+        responseType: "blob", // response treated as a file
+        // binary large object
+      }
+    );
+
+    // Create a download link for the CSV file
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "music_export.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error: any) {
+    toast.error("Failed to export CSV");
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const importMusicCSV = async (file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append("csv_file", file);
+
+    const response = await axiosInstance.post(
+      `${ARTIST_API_BASE_URL}/songs/`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    toast.success("CSV imported successfully");
+    return response.data;
+  } catch (error: any) {
+    toast.error("Failed to import CSV");
+    throw error.response ? error.response.data : error.message;
   }
 };

@@ -28,12 +28,17 @@ export default function ArtistTable() {
   const [artists, setArtists] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const getArtists = async () => {
+      setIsLoading(true);
       try {
-        const data = await fetchArtists();
-        setArtists(data);
+        const data = await fetchArtists(page, pageSize);
+        setArtists(data.artists);
+        setTotalPages(data.total_pages);
       } catch (error) {
         console.error("Error fetching artists:", error);
         toast.error("Failed to load artists");
@@ -42,7 +47,7 @@ export default function ArtistTable() {
       }
     };
     getArtists();
-  }, []);
+  }, [page, pageSize]);
 
   const handleEdit = (id: number) => {
     router.push(`/artists/${id}/edit`);
@@ -208,6 +213,27 @@ export default function ArtistTable() {
             )}
           </TableBody>
         </Table>
+        {!isLoading && totalPages > 1 && (
+          <div className="flex justify-center gap-2 pt-4">
+            <Button
+              variant="outline"
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
+            >
+              Previous
+            </Button>
+            <span className="px-4 py-2 text-sm text-muted-foreground">
+              Page {page} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              disabled={page === totalPages}
+              onClick={() => setPage(page + 1)}
+            >
+              Next
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

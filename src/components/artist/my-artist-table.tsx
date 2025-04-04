@@ -28,6 +28,9 @@ export default function MyArtistTable() {
   const [artists, setArtists] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
@@ -47,9 +50,11 @@ export default function MyArtistTable() {
     }
 
     const getArtists = async () => {
+      setIsLoading(true);
       try {
-        const data = await fetchArtistsByUserId(userId);
-        setArtists(data);
+        const data = await fetchArtistsByUserId(userId, page, pageSize);
+        setArtists(data.artists);
+        setTotalPages(data.total_pages);
       } catch (error) {
         console.error("Error fetching artists:", error);
         toast.error("Failed to load artists");
@@ -58,7 +63,7 @@ export default function MyArtistTable() {
       }
     };
     getArtists();
-  }, []);
+  }, [page, pageSize]);
 
   const handleEdit = (id: number) => {
     router.push(`/artists/${id}/edit`);
@@ -91,16 +96,16 @@ export default function MyArtistTable() {
           </TableCaption>
           <TableHeader className="bg-muted/50">
             <TableRow>
-              <TableHead>Image</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Date of Birth</TableHead>
-              <TableHead>Gender</TableHead>
-              <TableHead>Address</TableHead>
-              <TableHead>First Release</TableHead>
-              <TableHead>Albums</TableHead>
-              <TableHead>Joined At</TableHead>
-              <TableHead>Updated At</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="w-[80px]">Image</TableHead>
+              <TableHead className="min-w-[150px]">Name</TableHead>
+              <TableHead className="w-[120px]">Date of Birth</TableHead>
+              <TableHead className="w-[100px]">Gender</TableHead>
+              <TableHead className="min-w-[180px]">Address</TableHead>
+              <TableHead className="w-[120px]">First Release</TableHead>
+              <TableHead className="w-[120px]">Albums</TableHead>
+              <TableHead className="w-[140px]">Joined At</TableHead>
+              <TableHead className="w-[140px]">Updated At</TableHead>
+              <TableHead className="w-[80px] text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -131,6 +136,9 @@ export default function MyArtistTable() {
                   <TableCell>
                     <Skeleton className="h-4 w-[100px]" />
                   </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[100px]" />
+                  </TableCell>
                   <TableCell className="text-right">
                     <Skeleton className="h-8 w-8 mx-auto" />
                   </TableCell>
@@ -138,9 +146,9 @@ export default function MyArtistTable() {
               ))
             ) : artists.length > 0 ? (
               artists.map((artist) => (
-                <TableRow key={artist.id}>
+                <TableRow key={artist.id} className="hover:bg-muted/50">
                   <TableCell>
-                    <Avatar>
+                    <Avatar className="h-[5rem] w-[5rem]">
                       <AvatarImage
                         src={
                           artist.image
@@ -149,17 +157,27 @@ export default function MyArtistTable() {
                         }
                         alt={artist.name}
                       />
-                      <AvatarFallback>{artist.name.charAt(0)}</AvatarFallback>
+                      <AvatarFallback>
+                        {artist.name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
                   </TableCell>
-                  <TableCell>{artist.name}</TableCell>
+                  <TableCell className="font-medium">{artist.name}</TableCell>
                   <TableCell>{artist.dob || "-"}</TableCell>
                   <TableCell>
-                    <Badge>{artist.gender || "-"}</Badge>
+                    <Badge variant="outline" className="capitalize">
+                      {artist.gender || "-"}
+                    </Badge>
                   </TableCell>
-                  <TableCell>{artist.address || "-"}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {artist.address || "-"}
+                  </TableCell>
                   <TableCell>{artist.first_release_year || "-"}</TableCell>
-                  <TableCell>{artist.no_of_albums || "0"} albums</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">
+                      {artist.no_of_albums || "0"} albums
+                    </Badge>
+                  </TableCell>
                   <TableCell>
                     {new Date(artist.created_at).toLocaleDateString()}
                   </TableCell>
@@ -169,21 +187,31 @@ export default function MyArtistTable() {
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical />
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreVertical className="h-4 w-4" />
+                          <span className="sr-only">Actions</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleView(artist.id)}>
+                        <DropdownMenuItem
+                          onClick={() => handleView(artist.id)}
+                          className="cursor-pointer gap-2"
+                        >
+                          <Eye className="h-4 w-4" />
                           View
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleEdit(artist.id)}>
+                        <DropdownMenuItem
+                          onClick={() => handleEdit(artist.id)}
+                          className="cursor-pointer gap-2"
+                        >
+                          <Edit className="h-4 w-4" />
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleDelete(artist.id)}
-                          className="text-destructive"
+                          className="cursor-pointer text-destructive focus:text-destructive gap-2"
                         >
+                          <Trash className="h-4 w-4" />
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -193,13 +221,34 @@ export default function MyArtistTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={10} className="text-center">
+                <TableCell colSpan={10} className="h-24 text-center">
                   No artists found
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+        {!isLoading && totalPages > 1 && (
+          <div className="flex justify-center gap-2 pt-4">
+            <Button
+              variant="outline"
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
+            >
+              Previous
+            </Button>
+            <span className="px-4 py-2 text-sm text-muted-foreground">
+              Page {page} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              disabled={page === totalPages}
+              onClick={() => setPage(page + 1)}
+            >
+              Next
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

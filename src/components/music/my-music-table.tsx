@@ -1,11 +1,9 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import {
   deleteSong,
+  fetchArtists,
   fetchMyMusic,
   searchMyMusic,
-  fetchArtists,
 } from "@/api/api";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,9 +22,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Eye, MoreVertical, Search, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { Input } from "../ui/input";
 import { Skeleton } from "../ui/skeleton";
+import ImportCSVButton from "../csv/import-csv";
+import ExportCSVButton from "../csv/export-csv";
 
 export default function MyMusicTable() {
   const [songs, setSongs] = useState<any[]>([]);
@@ -45,13 +47,15 @@ export default function MyMusicTable() {
 
     const getSongsAndArtists = async () => {
       try {
-        const [songsData, artistsData] = await Promise.all([
+        const [songsData, artistsResponse] = await Promise.all([
           fetchMyMusic(),
-          fetchArtists(),
+          fetchArtists(1, 100), // Fetch first 100 artists
         ]);
 
         setSongs(songsData);
 
+        // Handle paginated artists response
+        const artistsData = artistsResponse.artists || [];
         const artistMap = artistsData.reduce(
           (acc: Record<number, string>, artist: any) => {
             acc[artist.id] = artist.name;
@@ -218,6 +222,12 @@ export default function MyMusicTable() {
           </TableBody>
         </Table>
       </div>
+      {/* {role === "artist_manager" && ( */}
+      <div className="flex justify-between">
+        <ImportCSVButton />
+        <ExportCSVButton />
+      </div>
+      {/* )} */}
     </div>
   );
 }

@@ -23,6 +23,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { Input } from "../ui/input";
 import { Skeleton } from "../ui/skeleton";
 import { Badge } from "../ui/badge";
+import ExportCSVButton from "../csv/export-csv";
+import ImportCSVButton from "../csv/import-csv";
 
 export default function MusicTable() {
   const [songs, setSongs] = useState<any[]>([]);
@@ -172,6 +174,10 @@ export default function MusicTable() {
             )}
           </TableBody>
         </Table>
+      </div>
+      <div className="flex justify-between">
+        <ImportCSVButton />
+        <ExportCSVButton />
       </div>
     </div>
   );
