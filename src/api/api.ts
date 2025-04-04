@@ -71,38 +71,38 @@ axiosInstance.interceptors.response.use(
 );
 
 // Login API with proper token storage
-export const login = async (credentials: ILoginCredentials) => {
-  try {
-    const response = await axios.post<{
-      access_token: string;
-      refresh_token: string;
-      user: IUser;
-    }>(`${API_BASE_URL}/login/`, credentials);
+// export const login = async (credentials: ILoginCredentials) => {
+//   try {
+//     const response = await axios.post<{
+//       access_token: string;
+//       refresh_token: string;
+//       user: IUser;
+//     }>(`${API_BASE_URL}/login/`, credentials);
 
-    if (response.data.access_token) {
-      // Store Access Token
-      await setCookie(
-        "access_token",
-        response.data.access_token,
-        Date.now() + 15 * 60 * 1000 // 15 min expiry
-      );
+//     if (response.data.access_token) {
+//       // Store Access Token
+//       await setCookie(
+//         "access_token",
+//         response.data.access_token,
+//         Date.now() + 15 * 60 * 1000 // 15 min expiry
+//       );
 
-      // Store Refresh Token
-      await setCookie(
-        "refresh_token",
-        response.data.refresh_token,
-        Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days expiry
-      );
+//       // Store Refresh Token
+//       await setCookie(
+//         "refresh_token",
+//         response.data.refresh_token,
+//         Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days expiry
+//       );
 
-      // Store user info in session storage
-      sessionStorage.setItem("user", JSON.stringify(response.data.user));
-    }
+//       // Store user info in session storage
+//       sessionStorage.setItem("user", JSON.stringify(response.data.user));
+//     }
 
-    return response.data;
-  } catch (error: any) {
-    throw error.response ? error.response.data : error.message;
-  }
-};
+//     return response.data;
+//   } catch (error: any) {
+//     throw error.response ? error.response.data : error.message;
+//   }
+// };
 
 // fetch artist with pagination
 export const fetchArtists = async (page = 1, pageSize = 10) => {
@@ -264,17 +264,17 @@ export const deleteSong = async (id: number) => {
 };
 
 // SignUp API (No auth required)
-export const signUp = async (userData: IUser) => {
-  try {
-    const response = await axios.post<IUser>(
-      `${API_BASE_URL}/register/`,
-      userData
-    );
-    // return response.data;
-  } catch (error: any) {
-    throw error.response ? error.response.data : error.message;
-  }
-};
+// export const signUp = async (userData: IUser) => {
+//   try {
+//     const response = await axios.post<IUser>(
+//       `${API_BASE_URL}/register/`,
+//       userData
+//     );
+//     // return response.data;
+//   } catch (error: any) {
+//     throw error.response ? error.response.data : error.message;
+//   }
+// };
 
 export const searchMyMusic = async (query: string) => {
   try {

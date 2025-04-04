@@ -5,15 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import lana from "../../assets/lanaLogin.jpeg";
+import lana from "@/assets/lanaLogin.jpeg";
 import bg1 from "../../assets/bg1.jpg";
 import { useState } from "react";
-import { login } from "@/api/api";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { login } from "../actions/login.action";
 
-export function LoginForm({
+export default function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {

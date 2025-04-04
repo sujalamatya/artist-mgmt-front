@@ -14,13 +14,13 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import juice from "../../assets/juice.jpg";
-import { signUp } from "@/api/api";
+import juice from "@/assets/juice.jpg";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { signUp } from "../actions/signup.action";
 
-export function SignUpForm({
+export default function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
