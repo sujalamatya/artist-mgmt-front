@@ -103,9 +103,13 @@ export const login = async (credentials: ILoginCredentials) => {
     throw error.response ? error.response.data : error.message;
   }
 };
-export const fetchArtists = async () => {
+
+// fetch artist with pagination
+export const fetchArtists = async (page = 1, pageSize = 10) => {
   try {
-    const response = await axiosInstance.get(`${ARTIST_API_BASE_URL}/artists/`);
+    const response = await axiosInstance.get(
+      `${ARTIST_API_BASE_URL}/artists/?page=${page}&page_size=${pageSize}`
+    );
     return response.data;
   } catch (error: any) {
     throw error.response ? error.response.data : error.message;
