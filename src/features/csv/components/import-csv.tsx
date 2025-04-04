@@ -1,9 +1,9 @@
 "use client";
 
-import { importMusicCSV } from "@/api/api";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useState } from "react";
+import { importMusicCSV } from "../actions/csv.action";
 
 const ImportCSVButton = () => {
   const [isLoading, setIsLoading] = useState(false);

@@ -22,8 +22,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { Input } from "../../../components/ui/input";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { Badge } from "../../../components/ui/badge";
-import ExportCSVButton from "../../../components/csv/export-csv";
-import ImportCSVButton from "../../../components/csv/import-csv";
+import ExportCSVButton from "../../csv/components/export-csv";
+import ImportCSVButton from "../../csv/components/import-csv";
 import { searchSongs } from "../actions/music.action";
 import { fetchArtistSongs } from "@/features/artist/actions/artist.action";
 
