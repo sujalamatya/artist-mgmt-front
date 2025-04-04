@@ -2,14 +2,14 @@
 
 import { AppSidebar } from "@/components/common/app-sidebar";
 import Navbar from "@/components/common/nav-bar";
-import ImageCarousel from "@/components/dashboard/main-pics";
-import { TotalAlbums } from "@/components/dashboard/total-album";
-import { TotalArtists } from "@/components/dashboard/total-artist";
+import ImageCarousel from "@/features/dashboard/components/main-pics";
+import TotalAlbums from "@/features/dashboard/components/total-album";
+import TotalArtists from "@/features/dashboard/components/total-artist";
 import { useEffect, useState } from "react";
-import { MusicGenresChart } from "@/components/dashboard/music-genre-chart";
-import { MyMusicChart } from "@/components/dashboard/my-music-genre-chart";
-import { MyTotalAlbums } from "@/components/dashboard/my-total-alnums";
-import { MyTotalSongs } from "@/components/dashboard/my-total-songs";
+import { MusicGenresChart } from "@/features/dashboard/components/music-genre-chart";
+import { MyMusicChart } from "@/features/dashboard/components/my-music-genre-chart";
+import MyTotalAlbums from "@/features/dashboard/components/my-total-alnums";
+import MyTotalSongs from "@/features/dashboard/components/my-total-songs";
 import {
   Breadcrumb,
   BreadcrumbItem,

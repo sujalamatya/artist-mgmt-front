@@ -1,5 +1,5 @@
 // app/artists/page.tsx
-import ArtistTable from "@/components/artist/artist-table";
+import ArtistTable from "@/features/artist/components/artist-table";
 import { AppSidebar } from "@/components/common/app-sidebar";
 import Navbar from "@/components/common/nav-bar";
 import {
@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import MusicTable from "@/components/music/music-table";
+import MusicTable from "@/features/music/components/music-table";
 
 export default function MusicPage() {
   return (

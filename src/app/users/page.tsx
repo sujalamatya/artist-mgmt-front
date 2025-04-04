@@ -14,8 +14,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { AddUserSheet } from "@/components/users/add-user";
-import UserTable from "@/components/users/user-table";
+import AddUserSheet from "@/features/user/components/add-user";
+import UserTable from "@/features/user/components/user-table";
 import { useState } from "react";
 
 export default function Users() {

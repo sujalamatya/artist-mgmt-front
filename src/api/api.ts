@@ -71,44 +71,44 @@ axiosInstance.interceptors.response.use(
 );
 
 // Login API with proper token storage
-export const login = async (credentials: ILoginCredentials) => {
-  try {
-    const response = await axios.post<{
-      access_token: string;
-      refresh_token: string;
-      user: IUser;
-    }>(`${API_BASE_URL}/login/`, credentials);
+// export const login = async (credentials: ILoginCredentials) => {
+//   try {
+//     const response = await axios.post<{
+//       access_token: string;
+//       refresh_token: string;
+//       user: IUser;
+//     }>(`${API_BASE_URL}/login/`, credentials);
 
-    if (response.data.access_token) {
-      // Store Access Token
-      await setCookie(
-        "access_token",
-        response.data.access_token,
-        Date.now() + 15 * 60 * 1000 // 15 min expiry
-      );
+//     if (response.data.access_token) {
+//       // Store Access Token
+//       await setCookie(
+//         "access_token",
+//         response.data.access_token,
+//         Date.now() + 15 * 60 * 1000 // 15 min expiry
+//       );
 
-      // Store Refresh Token
-      await setCookie(
-        "refresh_token",
-        response.data.refresh_token,
-        Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days expiry
-      );
+//       // Store Refresh Token
+//       await setCookie(
+//         "refresh_token",
+//         response.data.refresh_token,
+//         Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days expiry
+//       );
 
-      // Store user info in session storage
-      sessionStorage.setItem("user", JSON.stringify(response.data.user));
-    }
+//       // Store user info in session storage
+//       sessionStorage.setItem("user", JSON.stringify(response.data.user));
+//     }
 
-    return response.data;
-  } catch (error: any) {
-    throw error.response ? error.response.data : error.message;
-  }
-};
+//     return response.data;
+//   } catch (error: any) {
+//     throw error.response ? error.response.data : error.message;
+//   }
+// };
 
 // fetch artist with pagination
 export const fetchArtists = async (page = 1, pageSize = 10) => {
   try {
     const response = await axiosInstance.get(
-      `${ARTIST_API_BASE_URL}/artists/?page=${page}&page_size=${pageSize}`
+      `${ARTIST_API_BASE_URL}/artists/?page=${page}&page_size=${pageSize}` //------------------------done
     );
     return response.data;
   } catch (error: any) {
@@ -118,6 +118,7 @@ export const fetchArtists = async (page = 1, pageSize = 10) => {
 
 // Fetch artists by user ID
 export const fetchArtistsByUserId = async (
+  //---------DONE
   Id: number,
   page = 1,
   pageSize = 10
@@ -139,7 +140,7 @@ export const fetchArtistById = async (id: number) => {
     );
     return response.data;
   } catch (error: any) {
-    throw error.response ? error.response.data : error.message;
+    throw error.response ? error.response.data : error.message; //-----------------------DONE
   }
 };
 
@@ -147,7 +148,7 @@ export const fetchArtistById = async (id: number) => {
 export const fetchArtistSongs = async (id?: number) => {
   try {
     const url = id
-      ? `${ARTIST_API_BASE_URL}/artists/${id}/songs/`
+      ? `${ARTIST_API_BASE_URL}/artists/${id}/songs/` //-----------------------done
       : `${ARTIST_API_BASE_URL}/songs/`; // Fetch all songs if no ID is provided
     const response = await axiosInstance.get(url);
     return response.data;
@@ -164,7 +165,7 @@ export const fetchMyMusic = async () => {
     );
     return response.data;
   } catch (error: any) {
-    throw error.response ? error.response.data : error.message;
+    throw error.response ? error.response.data : error.message; //---------DONE
   }
 };
 
@@ -176,14 +177,14 @@ export const searchSongs = async (query: string) => {
     );
     return response.data;
   } catch (error: any) {
-    throw error.response ? error.response.data : error.message;
+    throw error.response ? error.response.data : error.message; //-------------------done
   }
 };
 // Search songs by artist and query
 export const searchSongsById = async (query: string, artistId: number) => {
   try {
     const response = await axiosInstance.get(
-      `${ARTIST_API_BASE_URL}/songs/?artist_id=${artistId}&search=${query}`
+      `${ARTIST_API_BASE_URL}/songs/?artist_id=${artistId}&search=${query}` //DONE
     );
     return response.data;
   } catch (error: any) {
@@ -207,7 +208,7 @@ export const createArtist = async (formData: FormData) => {
   } catch (error: any) {
     if (error.response) {
       if (error.response.status === 401) {
-        throw new Error("Your session has expired. Please log in again.");
+        throw new Error("Your session has expired. Please log in again."); //----------DONE
       }
       throw error.response.data;
     }
@@ -234,7 +235,7 @@ export const updateArtist = async (
     const response = await axiosInstance.put(
       `${ARTIST_API_BASE_URL}/artists/${id}/`,
       artistData,
-      isFormData ? { headers: { "Content-Type": "multipart/form-data" } } : {}
+      isFormData ? { headers: { "Content-Type": "multipart/form-data" } } : {} //-----------------DONE
     );
 
     return response.data;
@@ -245,6 +246,7 @@ export const updateArtist = async (
 
 // Delete an artist by ID (Requires Authorization)
 export const deleteArtist = async (id: number) => {
+  //-------------------DONE
   try {
     await axiosInstance.delete(`${ARTIST_API_BASE_URL}/artists/${id}/`);
     return { success: true, message: "Artist deleted successfully" };
@@ -256,7 +258,7 @@ export const deleteArtist = async (id: number) => {
 // Delete an SONG by ID (Requires Authorization)
 export const deleteSong = async (id: number) => {
   try {
-    await axiosInstance.delete(`${ARTIST_API_BASE_URL}/songs/${id}/`);
+    await axiosInstance.delete(`${ARTIST_API_BASE_URL}/songs/${id}/`); //---------DONE
     return { success: true, message: "Song deleted successfully" };
   } catch (error: any) {
     throw error.response ? error.response.data : error.message;
@@ -264,22 +266,22 @@ export const deleteSong = async (id: number) => {
 };
 
 // SignUp API (No auth required)
-export const signUp = async (userData: IUser) => {
-  try {
-    const response = await axios.post<IUser>(
-      `${API_BASE_URL}/register/`,
-      userData
-    );
-    // return response.data;
-  } catch (error: any) {
-    throw error.response ? error.response.data : error.message;
-  }
-};
+// export const signUp = async (userData: IUser) => {
+//   try {
+//     const response = await axios.post<IUser>(
+//       `${API_BASE_URL}/register/`,
+//       userData
+//     );
+//     // return response.data;
+//   } catch (error: any) {
+//     throw error.response ? error.response.data : error.message;
+//   }
+// };
 
 export const searchMyMusic = async (query: string) => {
   try {
     const response = await axiosInstance.get(
-      `${ARTIST_API_BASE_URL}/songs/?user_music=true&search=${query}`
+      `${ARTIST_API_BASE_URL}/songs/?user_music=true&search=${query}` //--------------DONE
     );
     return response.data;
   } catch (error: any) {
@@ -299,7 +301,7 @@ export const createMyMusic = async (musicData: {
     );
     return response.data;
   } catch (error: any) {
-    throw error.response ? error.response.data : error.message;
+    throw error.response ? error.response.data : error.message; //-----------DONE
   }
 };
 export const addArtistSong = async (songData: {
@@ -335,111 +337,111 @@ export const deleteUser = async (id: number): Promise<string> => {
   return response.data?.message || "User deleted successfully";
 };
 
-//EVENT APIS
-export const fetchEvents = async (): Promise<Event[]> => {
-  try {
-    const response = await fetch(EVENT_API_BASE_URL);
-    if (!response.ok) throw new Error("Failed to fetch events");
-    return await response.json();
-  } catch (error) {
-    toast.error("Failed to load events");
-    throw error;
-  }
-};
+// //EVENT APIS
+// export const fetchEvents = async (): Promise<Event[]> => {
+//   try {
+//     const response = await fetch(EVENT_API_BASE_URL);
+//     if (!response.ok) throw new Error("Failed to fetch events");
+//     return await response.json();
+//   } catch (error) {
+//     toast.error("Failed to load events");
+//     throw error;
+//   }
+// };
 
-export const createEvent = async (data: Omit<Event, "id">): Promise<Event> => {
-  try {
-    const response = await fetch(EVENT_API_BASE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) throw new Error(response.statusText);
-    return await response.json();
-  } catch (error) {
-    toast.error("Failed to create event");
-    throw error;
-  }
-};
+// export const createEvent = async (data: Omit<Event, "id">): Promise<Event> => {
+//   try {
+//     const response = await fetch(EVENT_API_BASE_URL, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(data),
+//     });
+//     if (!response.ok) throw new Error(response.statusText);
+//     return await response.json();
+//   } catch (error) {
+//     toast.error("Failed to create event");
+//     throw error;
+//   }
+// };
 
-export const updateEvent = async (
-  id: number,
-  data: Partial<Event>
-): Promise<Event> => {
-  try {
-    const response = await fetch(`${EVENT_API_BASE_URL}/${id}/`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) throw new Error(response.statusText);
-    return await response.json();
-  } catch (error) {
-    toast.error("Failed to update event");
-    throw error;
-  }
-};
+// export const updateEvent = async (
+//   id: number,
+//   data: Partial<Event>
+// ): Promise<Event> => {
+//   try {
+//     const response = await fetch(`${EVENT_API_BASE_URL}/${id}/`, {
+//       method: "PUT",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(data),
+//     });
+//     if (!response.ok) throw new Error(response.statusText);
+//     return await response.json();
+//   } catch (error) {
+//     toast.error("Failed to update event");
+//     throw error;
+//   }
+// };
 
-export const deleteEvent = async (id: number): Promise<void> => {
-  try {
-    const response = await fetch(`${EVENT_API_BASE_URL}/${id}/`, {
-      method: "DELETE",
-    });
-    if (!response.ok) throw new Error("Failed to delete event");
-  } catch (error) {
-    toast.error("Failed to delete event");
-    throw error;
-  }
-};
+// export const deleteEvent = async (id: number): Promise<void> => {
+//   try {
+//     const response = await fetch(`${EVENT_API_BASE_URL}/${id}/`, {
+//       method: "DELETE",
+//     });
+//     if (!response.ok) throw new Error("Failed to delete event");
+//   } catch (error) {
+//     toast.error("Failed to delete event");
+//     throw error;
+//   }
+// };
 
 // Export music list as CSV
-export const exportMusicCSV = async () => {
-  try {
-    const response = await axiosInstance.get(
-      `${ARTIST_API_BASE_URL}/songs/?export=csv`,
-      {
-        responseType: "blob", // response treated as a file
-        // binary large object
-      }
-    );
+// export const exportMusicCSV = async () => {
+//   try {
+//     const response = await axiosInstance.get(
+//       `${ARTIST_API_BASE_URL}/songs/?export=csv`,
+//       {
+//         responseType: "blob", // response treated as a file
+//         // binary large object
+//       }
+//     );
 
-    // Create a download link for the CSV file
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "music_export.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } catch (error: any) {
-    toast.error("Failed to export CSV");
-    throw error.response ? error.response.data : error.message;
-  }
-};
+//     // Create a download link for the CSV file
+//     const url = window.URL.createObjectURL(new Blob([response.data]));
+//     const link = document.createElement("a");
+//     link.href = url;
+//     link.setAttribute("download", "music_export.csv");
+//     document.body.appendChild(link);
+//     link.click();
+//     document.body.removeChild(link);
+//   } catch (error: any) {
+//     toast.error("Failed to export CSV");
+//     throw error.response ? error.response.data : error.message;
+//   }
+// };
 
-export const importMusicCSV = async (file: File) => {
-  try {
-    const formData = new FormData();
-    formData.append("csv_file", file);
+// export const importMusicCSV = async (file: File) => {
+//   try {
+//     const formData = new FormData();
+//     formData.append("csv_file", file);
 
-    const response = await axiosInstance.post(
-      `${ARTIST_API_BASE_URL}/songs/`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+//     const response = await axiosInstance.post(
+//       `${ARTIST_API_BASE_URL}/songs/`,
+//       formData,
+//       {
+//         headers: {
+//           "Content-Type": "multipart/form-data",
+//         },
+//       }
+//     );
 
-    toast.success("CSV imported successfully");
-    return response.data;
-  } catch (error: any) {
-    toast.error("Failed to import CSV");
-    throw error.response ? error.response.data : error.message;
-  }
-};
+//     toast.success("CSV imported successfully");
+//     return response.data;
+//   } catch (error: any) {
+//     toast.error("Failed to import CSV");
+//     throw error.response ? error.response.data : error.message;
+//   }
+// };
