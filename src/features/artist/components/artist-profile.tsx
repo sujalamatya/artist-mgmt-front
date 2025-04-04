@@ -10,7 +10,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchArtistById } from "@/api/api";
+import { fetchArtistById } from "../actions/artist.action";
 
 export default function ViewArtist() {
   const params = useParams();

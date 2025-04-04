@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MoreVertical, Eye, Edit, Trash } from "lucide-react";
-import { fetchArtistsByUserId, deleteArtist } from "@/api/api";
 import {
   Table,
   TableBody,
@@ -23,6 +22,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { deleteArtist, fetchArtistsByUserId } from "../actions/artist.action";
 
 export default function MyArtistTable() {
   const [artists, setArtists] = useState<any[]>([]);

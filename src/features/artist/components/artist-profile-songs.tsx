@@ -1,6 +1,5 @@
 "use client";
 
-import { fetchArtistSongs, searchSongsById } from "@/api/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,6 +16,7 @@ import {
 import { Search } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { fetchArtistSongs, searchSongsById } from "../actions/artist.action";
 
 export default function ArtistProfileSongs() {
   const params = useParams();

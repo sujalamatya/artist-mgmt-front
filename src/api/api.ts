@@ -108,7 +108,7 @@ axiosInstance.interceptors.response.use(
 export const fetchArtists = async (page = 1, pageSize = 10) => {
   try {
     const response = await axiosInstance.get(
-      `${ARTIST_API_BASE_URL}/artists/?page=${page}&page_size=${pageSize}`
+      `${ARTIST_API_BASE_URL}/artists/?page=${page}&page_size=${pageSize}` //------------------------done
     );
     return response.data;
   } catch (error: any) {
@@ -118,6 +118,7 @@ export const fetchArtists = async (page = 1, pageSize = 10) => {
 
 // Fetch artists by user ID
 export const fetchArtistsByUserId = async (
+  //---------DONE
   Id: number,
   page = 1,
   pageSize = 10
@@ -139,7 +140,7 @@ export const fetchArtistById = async (id: number) => {
     );
     return response.data;
   } catch (error: any) {
-    throw error.response ? error.response.data : error.message;
+    throw error.response ? error.response.data : error.message; //-----------------------DONE
   }
 };
 
@@ -147,7 +148,7 @@ export const fetchArtistById = async (id: number) => {
 export const fetchArtistSongs = async (id?: number) => {
   try {
     const url = id
-      ? `${ARTIST_API_BASE_URL}/artists/${id}/songs/`
+      ? `${ARTIST_API_BASE_URL}/artists/${id}/songs/` //-----------------------done
       : `${ARTIST_API_BASE_URL}/songs/`; // Fetch all songs if no ID is provided
     const response = await axiosInstance.get(url);
     return response.data;
@@ -183,7 +184,7 @@ export const searchSongs = async (query: string) => {
 export const searchSongsById = async (query: string, artistId: number) => {
   try {
     const response = await axiosInstance.get(
-      `${ARTIST_API_BASE_URL}/songs/?artist_id=${artistId}&search=${query}`
+      `${ARTIST_API_BASE_URL}/songs/?artist_id=${artistId}&search=${query}` //DONE
     );
     return response.data;
   } catch (error: any) {
@@ -207,7 +208,7 @@ export const createArtist = async (formData: FormData) => {
   } catch (error: any) {
     if (error.response) {
       if (error.response.status === 401) {
-        throw new Error("Your session has expired. Please log in again.");
+        throw new Error("Your session has expired. Please log in again."); //----------DONE
       }
       throw error.response.data;
     }
@@ -234,7 +235,7 @@ export const updateArtist = async (
     const response = await axiosInstance.put(
       `${ARTIST_API_BASE_URL}/artists/${id}/`,
       artistData,
-      isFormData ? { headers: { "Content-Type": "multipart/form-data" } } : {}
+      isFormData ? { headers: { "Content-Type": "multipart/form-data" } } : {} //-----------------DONE
     );
 
     return response.data;
@@ -245,6 +246,7 @@ export const updateArtist = async (
 
 // Delete an artist by ID (Requires Authorization)
 export const deleteArtist = async (id: number) => {
+  //-------------------DONE
   try {
     await axiosInstance.delete(`${ARTIST_API_BASE_URL}/artists/${id}/`);
     return { success: true, message: "Artist deleted successfully" };
