@@ -1,11 +1,9 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import {
   deleteSong,
+  fetchArtists,
   fetchMyMusic,
   searchMyMusic,
-  fetchArtists,
 } from "@/api/api";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,9 +22,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Eye, MoreVertical, Search, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { Input } from "../ui/input";
 import { Skeleton } from "../ui/skeleton";
+import ImportCSVButton from "../csv/import-csv";
+import ExportCSVButton from "../csv/export-csv";
 
 export default function MyMusicTable() {
   const [songs, setSongs] = useState<any[]>([]);
@@ -220,6 +222,12 @@ export default function MyMusicTable() {
           </TableBody>
         </Table>
       </div>
+      {/* {role === "artist_manager" && ( */}
+      <div className="flex justify-between">
+        <ImportCSVButton />
+        <ExportCSVButton />
+      </div>
+      {/* )} */}
     </div>
   );
 }
