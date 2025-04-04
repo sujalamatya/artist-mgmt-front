@@ -7,11 +7,16 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { EventDialog } from "./event-dialog";
 import { EventList } from "./event-list";
-import { Event } from "@/types/types";
-import { fetchEvents, createEvent, updateEvent, deleteEvent } from "@/api/api";
+import {
+  fetchEvents,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+} from "../actions/event.action";
 import { useForm } from "react-hook-form";
-import { eventFormSchema, EventFormValues } from "@/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Event } from "../types/event.type";
+import { eventFormSchema, EventFormValues } from "../schemas/form.schema";
 
 export function EventCalendar() {
   const [events, setEvents] = useState<Event[]>([]);

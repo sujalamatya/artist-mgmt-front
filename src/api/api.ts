@@ -321,82 +321,82 @@ export const addArtistSong = async (songData: {
   }
 };
 
-// // Fetch all users
-// export const fetchUsers = async (): Promise<any[]> => {
+// Fetch all users
+export const fetchUsers = async (): Promise<any[]> => {
+  try {
+    const response = await axiosInstance.get(`${API_BASE_URL}/users/`);
+    return response.data;
+  } catch (error: any) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Delete a user
+export const deleteUser = async (id: number): Promise<string> => {
+  const response = await axiosInstance.delete(`${API_BASE_URL}/users/${id}/`);
+  return response.data?.message || "User deleted successfully";
+};
+
+// //EVENT APIS
+// export const fetchEvents = async (): Promise<Event[]> => {
 //   try {
-//     const response = await axiosInstance.get(`${API_BASE_URL}/users/`);
-//     return response.data;
-//   } catch (error: any) {
-//     throw error.response ? error.response.data : error.message;
+//     const response = await fetch(EVENT_API_BASE_URL);
+//     if (!response.ok) throw new Error("Failed to fetch events");
+//     return await response.json();
+//   } catch (error) {
+//     toast.error("Failed to load events");
+//     throw error;
 //   }
 // };
 
-// // Delete a user
-// export const deleteUser = async (id: number): Promise<string> => {
-//   const response = await axiosInstance.delete(`${API_BASE_URL}/users/${id}/`);
-//   return response.data?.message || "User deleted successfully";
+// export const createEvent = async (data: Omit<Event, "id">): Promise<Event> => {
+//   try {
+//     const response = await fetch(EVENT_API_BASE_URL, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(data),
+//     });
+//     if (!response.ok) throw new Error(response.statusText);
+//     return await response.json();
+//   } catch (error) {
+//     toast.error("Failed to create event");
+//     throw error;
+//   }
 // };
 
-//EVENT APIS
-export const fetchEvents = async (): Promise<Event[]> => {
-  try {
-    const response = await fetch(EVENT_API_BASE_URL);
-    if (!response.ok) throw new Error("Failed to fetch events");
-    return await response.json();
-  } catch (error) {
-    toast.error("Failed to load events");
-    throw error;
-  }
-};
+// export const updateEvent = async (
+//   id: number,
+//   data: Partial<Event>
+// ): Promise<Event> => {
+//   try {
+//     const response = await fetch(`${EVENT_API_BASE_URL}/${id}/`, {
+//       method: "PUT",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(data),
+//     });
+//     if (!response.ok) throw new Error(response.statusText);
+//     return await response.json();
+//   } catch (error) {
+//     toast.error("Failed to update event");
+//     throw error;
+//   }
+// };
 
-export const createEvent = async (data: Omit<Event, "id">): Promise<Event> => {
-  try {
-    const response = await fetch(EVENT_API_BASE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) throw new Error(response.statusText);
-    return await response.json();
-  } catch (error) {
-    toast.error("Failed to create event");
-    throw error;
-  }
-};
-
-export const updateEvent = async (
-  id: number,
-  data: Partial<Event>
-): Promise<Event> => {
-  try {
-    const response = await fetch(`${EVENT_API_BASE_URL}/${id}/`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) throw new Error(response.statusText);
-    return await response.json();
-  } catch (error) {
-    toast.error("Failed to update event");
-    throw error;
-  }
-};
-
-export const deleteEvent = async (id: number): Promise<void> => {
-  try {
-    const response = await fetch(`${EVENT_API_BASE_URL}/${id}/`, {
-      method: "DELETE",
-    });
-    if (!response.ok) throw new Error("Failed to delete event");
-  } catch (error) {
-    toast.error("Failed to delete event");
-    throw error;
-  }
-};
+// export const deleteEvent = async (id: number): Promise<void> => {
+//   try {
+//     const response = await fetch(`${EVENT_API_BASE_URL}/${id}/`, {
+//       method: "DELETE",
+//     });
+//     if (!response.ok) throw new Error("Failed to delete event");
+//   } catch (error) {
+//     toast.error("Failed to delete event");
+//     throw error;
+//   }
+// };
 
 // Export music list as CSV
 export const exportMusicCSV = async () => {
