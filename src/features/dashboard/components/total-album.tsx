@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Album } from "lucide-react";
 import axios from "axios";
 
-export function TotalAlbums() {
+export default function TotalAlbums() {
   const [albumCount, setAlbumCount] = useState<number | null>(null);
 
   useEffect(() => {

@@ -2,18 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ListMusic } from "lucide-react";
-import { fetchMyMusic } from "@/api/api";
+import { Album } from "lucide-react";
+import { fetchMyMusic } from "../actions/dashboard.action";
 
-export function MyTotalSongs() {
-  const [songsCount, setSongsCount] = useState<number | null>(null);
+export default function MyTotalAlbums() {
+  const [albumCount, setAlbumCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getSongs = async () => {
+    const getAlbum = async () => {
       try {
         const songs = await fetchMyMusic();
-        setSongsCount(songs.length);
+        const uniqueAlbums = new Set(
+          songs.map((song: { album_name: string }) => song.album_name)
+        );
+        setAlbumCount(uniqueAlbums.size);
       } catch (error) {
         console.error("Error fetching songs:", error);
       } finally {
@@ -21,14 +24,14 @@ export function MyTotalSongs() {
       }
     };
 
-    getSongs();
+    getAlbum();
   }, []);
 
   return (
     <Card className="dark:bg-muted/40">
       <CardHeader className="flex items-center gap-3">
-        <ListMusic className="w-6 h-6 text-primary" />
-        <CardTitle>Songs</CardTitle>
+        <Album className="w-6 h-6 text-primary" />
+        <CardTitle>Albums</CardTitle>
       </CardHeader>
       <CardContent>
         {loading ? (
@@ -36,10 +39,10 @@ export function MyTotalSongs() {
             <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
             <p className="ml-2 text-muted-foreground text-sm">Loading...</p>
           </div>
-        ) : songsCount !== null ? (
+        ) : albumCount !== null ? (
           <>
-            <p className="mt-10 text-7xl font-semibold">{songsCount}</p>
-            <p className="text-muted-foreground text-sm">Total Songs By You</p>
+            <p className="mt-10 text-7xl font-semibold">{albumCount}</p>
+            <p className="text-muted-foreground text-sm">Your Total Albums</p>
           </>
         ) : (
           <p className="text-muted-foreground text-sm">No data available</p>

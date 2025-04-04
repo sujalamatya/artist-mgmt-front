@@ -165,7 +165,7 @@ export const fetchMyMusic = async () => {
     );
     return response.data;
   } catch (error: any) {
-    throw error.response ? error.response.data : error.message;
+    throw error.response ? error.response.data : error.message; //---------DONE
   }
 };
 

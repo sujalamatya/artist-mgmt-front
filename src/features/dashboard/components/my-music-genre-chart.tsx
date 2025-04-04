@@ -11,7 +11,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Music } from "lucide-react";
-import { fetchMyMusic } from "@/api/api";
+import { fetchMyMusic } from "../actions/dashboard.action";
 
 const COLORS = [
   "#8884d8",

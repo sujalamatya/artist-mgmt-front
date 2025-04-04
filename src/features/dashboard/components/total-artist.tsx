@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
-import { fetchArtists } from "@/api/api";
+import { fetchArtists } from "@/features/artist/actions/artist.action";
 
-export function TotalArtists() {
+export default function TotalArtists() {
   const [artistCount, setArtistCount] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
