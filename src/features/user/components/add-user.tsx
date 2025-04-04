@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { signUp } from "@/api/api";
 import {
   Sheet,
   SheetTrigger,
@@ -30,34 +29,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { z } from "zod";
+import { signUp } from "@/features/auth/actions/signup.action";
+import { UserFormValues, userSchema } from "../schemas/form.schema";
 
-// Form validation schema
-const formSchema = z.object({
-  first_name: z.string().min(2, "First name must be at least 2 characters"),
-  last_name: z.string().min(2, "Last name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
-  dob: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)"),
-  gender: z.enum(["Male", "Female", "Other"]),
-  address: z.string().min(5, "Address must be at least 5 characters"),
-  role: z.enum(["artist", "artist_manager", "super_admin"]),
-});
-
-type FormValues = z.infer<typeof formSchema>;
 interface AddUserSheetProps {
-  onUserAdded?: () => void; // Callback to refresh the table
+  onUserAdded?: () => void;
 }
 
-export function AddUserSheet({ onUserAdded }: AddUserSheetProps) {
+export default function AddUserSheet({ onUserAdded }: AddUserSheetProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<UserFormValues>({
+    resolver: zodResolver(userSchema),
     defaultValues: {
       first_name: "",
       last_name: "",
@@ -71,14 +55,14 @@ export function AddUserSheet({ onUserAdded }: AddUserSheetProps) {
     },
   });
 
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit = async (values: UserFormValues) => {
     setIsLoading(true);
     try {
       await signUp(values);
       toast.success("User created successfully");
       form.reset();
       setOpen(false);
-      onUserAdded?.(); // Call the refresh callback
+      onUserAdded?.();
     } catch (error: any) {
       toast.error(error.message || "Failed to create user");
     } finally {

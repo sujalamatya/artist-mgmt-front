@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { MoreVertical, Eye, Edit, Trash } from "lucide-react";
-import { fetchUsers, deleteUser } from "@/api/api";
 import {
   Table,
   TableBody,
@@ -23,6 +22,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { deleteUser, fetchUsers } from "../actions/user.action";
 
 interface UserTableProps {
   refreshKey?: number; // Key to trigger refresh
