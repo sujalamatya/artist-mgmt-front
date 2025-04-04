@@ -115,11 +115,16 @@ export const fetchArtists = async (page = 1, pageSize = 10) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
 // Fetch artists by user ID
-export const fetchArtistsByUserId = async (Id: number) => {
+export const fetchArtistsByUserId = async (
+  Id: number,
+  page = 1,
+  pageSize = 10
+) => {
   try {
     const response = await axiosInstance.get(
-      `${ARTIST_API_BASE_URL}/users/${Id}/artists/`
+      `${ARTIST_API_BASE_URL}/users/${Id}/artists/?page=${page}&page_size=${pageSize}`
     );
     return response.data;
   } catch (error: any) {
