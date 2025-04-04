@@ -1,7 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { fetchArtistSongs, searchSongs } from "@/api/api";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -20,11 +19,13 @@ import {
 } from "@/components/ui/table";
 import { Eye, MoreVertical, Search } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
-import { Input } from "../ui/input";
-import { Skeleton } from "../ui/skeleton";
-import { Badge } from "../ui/badge";
-import ExportCSVButton from "../csv/export-csv";
-import ImportCSVButton from "../csv/import-csv";
+import { Input } from "../../../components/ui/input";
+import { Skeleton } from "../../../components/ui/skeleton";
+import { Badge } from "../../../components/ui/badge";
+import ExportCSVButton from "../../../components/csv/export-csv";
+import ImportCSVButton from "../../../components/csv/import-csv";
+import { searchSongs } from "../actions/music.action";
+import { fetchArtistSongs } from "@/features/artist/actions/artist.action";
 
 export default function MusicTable() {
   const [songs, setSongs] = useState<any[]>([]);

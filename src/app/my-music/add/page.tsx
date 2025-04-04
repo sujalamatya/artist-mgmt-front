@@ -1,5 +1,5 @@
 import Navbar from "@/components/common/nav-bar";
-import AddMyMusic from "@/components/music/add-my-music";
+import AddMyMusic from "@/features/music/components/add-my-music";
 import {
   Breadcrumb,
   BreadcrumbItem,

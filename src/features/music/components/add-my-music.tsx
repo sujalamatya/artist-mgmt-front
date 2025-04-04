@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createMyMusic } from "@/api/api";
 import { toast } from "react-toastify";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +14,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+import { createMyMusic } from "../actions/music.action";
 
 const genres = [
   "rnb",

@@ -1,7 +1,7 @@
 // app/artists/page.tsx
 import { AppSidebar } from "@/components/common/app-sidebar";
 import Navbar from "@/components/common/nav-bar";
-import MyMusicTable from "@/components/music/my-music-table";
+import MyMusicTable from "@/features/music/components/my-music-table";
 import {
   Breadcrumb,
   BreadcrumbItem,

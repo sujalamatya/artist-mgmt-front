@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import MusicTable from "@/components/music/music-table";
+import MusicTable from "@/features/music/components/music-table";
 
 export default function MusicPage() {
   return (

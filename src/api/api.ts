@@ -177,7 +177,7 @@ export const searchSongs = async (query: string) => {
     );
     return response.data;
   } catch (error: any) {
-    throw error.response ? error.response.data : error.message;
+    throw error.response ? error.response.data : error.message; //-------------------done
   }
 };
 // Search songs by artist and query
@@ -258,7 +258,7 @@ export const deleteArtist = async (id: number) => {
 // Delete an SONG by ID (Requires Authorization)
 export const deleteSong = async (id: number) => {
   try {
-    await axiosInstance.delete(`${ARTIST_API_BASE_URL}/songs/${id}/`);
+    await axiosInstance.delete(`${ARTIST_API_BASE_URL}/songs/${id}/`); //---------DONE
     return { success: true, message: "Song deleted successfully" };
   } catch (error: any) {
     throw error.response ? error.response.data : error.message;
@@ -281,7 +281,7 @@ export const deleteSong = async (id: number) => {
 export const searchMyMusic = async (query: string) => {
   try {
     const response = await axiosInstance.get(
-      `${ARTIST_API_BASE_URL}/songs/?user_music=true&search=${query}`
+      `${ARTIST_API_BASE_URL}/songs/?user_music=true&search=${query}` //--------------DONE
     );
     return response.data;
   } catch (error: any) {
@@ -301,7 +301,7 @@ export const createMyMusic = async (musicData: {
     );
     return response.data;
   } catch (error: any) {
-    throw error.response ? error.response.data : error.message;
+    throw error.response ? error.response.data : error.message; //-----------DONE
   }
 };
 export const addArtistSong = async (songData: {
