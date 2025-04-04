@@ -1,7 +1,7 @@
 // app/artists/page.tsx
 import { AppSidebar } from "@/components/common/app-sidebar";
 import Navbar from "@/components/common/nav-bar";
-import { EventCalendar } from "@/features/event/components/event-calender";
+import EventCalendar from "@/features/event/components/event-calender";
 import {
   Breadcrumb,
   BreadcrumbItem,

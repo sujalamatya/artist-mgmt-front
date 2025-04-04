@@ -5,8 +5,8 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { EventDialog } from "./event-dialog";
-import { EventList } from "./event-list";
+import EventDialog from "./event-dialog";
+import EventList from "./event-list";
 import {
   fetchEvents,
   createEvent,
@@ -18,7 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Event } from "../types/event.type";
 import { eventFormSchema, EventFormValues } from "../schemas/form.schema";
 
-export function EventCalendar() {
+export default function EventCalendar() {
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isLoading, setIsLoading] = useState(true);

@@ -11,7 +11,12 @@ interface EventListProps {
   onDelete: (id: number) => void;
 }
 
-export function EventList({ events, date, onEdit, onDelete }: EventListProps) {
+export default function EventList({
+  events,
+  date,
+  onEdit,
+  onDelete,
+}: EventListProps) {
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold mb-4">

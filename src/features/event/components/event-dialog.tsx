@@ -49,7 +49,7 @@ interface EventDialogProps {
   form: UseFormReturn<EventFormValues>;
 }
 
-export function EventDialog({
+export default function EventDialog({
   open,
   onOpenChange,
   onSubmit,
