@@ -39,14 +39,14 @@ import { fetchArtistsByUserId } from "@/features/artist/actions/artist.action";
 interface Artist {
   id: number;
   name: string;
-  // Add other artist properties if needed
 }
 
 interface EventDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: EventFormValues) => void;
-  form: UseFormReturn<EventFormValues>;
+  form: UseFormReturn<EventFormValues> & { getValues: (name: string) => any };
+  isEditing?: boolean;
 }
 
 export default function EventDialog({
@@ -54,6 +54,7 @@ export default function EventDialog({
   onOpenChange,
   onSubmit,
   form,
+  isEditing = false,
 }: EventDialogProps) {
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,17 +64,19 @@ export default function EventDialog({
       const userData = sessionStorage.getItem("user");
       if (userData) {
         const user = JSON.parse(userData);
-        // Set user ID in the form (hidden from UI)
         form.setValue("user_id", user.id);
 
-        // Fetch artists for this user
         const fetchArtists = async () => {
+          setLoading(true);
           try {
-            const artistsData = await fetchArtistsByUserId(user.id);
+            const response = await fetchArtistsByUserId(user.id);
+            // Handle both response formats
+            const artistsData = response.results || response.artists || [];
             setArtists(artistsData);
-            setLoading(false);
           } catch (error) {
             console.error("Failed to fetch artists:", error);
+            setArtists([]);
+          } finally {
             setLoading(false);
           }
         };
@@ -88,7 +91,7 @@ export default function EventDialog({
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>
-            {form.getValues("id") ? "Edit Event" : "Create New Event"}
+            {isEditing ? "Edit Event" : "Create New Event"}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -142,18 +145,16 @@ export default function EventDialog({
                           )}
                         </SelectTrigger>
                       </FormControl>
-                      {!loading && artists.length > 0 && (
-                        <SelectContent>
-                          {artists.map((artist) => (
-                            <SelectItem
-                              key={artist.id}
-                              value={artist.id.toString()}
-                            >
-                              {artist.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      )}
+                      <SelectContent>
+                        {artists.map((artist) => (
+                          <SelectItem
+                            key={artist.id}
+                            value={artist.id.toString()}
+                          >
+                            {artist.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
@@ -220,7 +221,7 @@ export default function EventDialog({
                 Cancel
               </Button>
               <Button type="submit">
-                {form.getValues("id") ? "Update" : "Create"} Event
+                {isEditing ? "Update" : "Create"} Event
               </Button>
             </div>
           </form>

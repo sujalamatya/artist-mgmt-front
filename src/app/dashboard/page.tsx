@@ -2,14 +2,6 @@
 
 import { AppSidebar } from "@/components/common/app-sidebar";
 import Navbar from "@/components/common/nav-bar";
-import ImageCarousel from "@/features/dashboard/components/main-pics";
-import TotalAlbums from "@/features/dashboard/components/total-album";
-import TotalArtists from "@/features/dashboard/components/total-artist";
-import { useEffect, useState } from "react";
-import { MusicGenresChart } from "@/features/dashboard/components/music-genre-chart";
-import { MyMusicChart } from "@/features/dashboard/components/my-music-genre-chart";
-import MyTotalAlbums from "@/features/dashboard/components/my-total-alnums";
-import MyTotalSongs from "@/features/dashboard/components/my-total-songs";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -23,6 +15,17 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import ArtistsPerMonthChart from "@/features/dashboard/components/artist-date";
+import ImageCarousel from "@/features/dashboard/components/main-pics";
+import { MusicGenresChart } from "@/features/dashboard/components/music-genre-chart";
+import { MyMusicChart } from "@/features/dashboard/components/my-music-genre-chart";
+import MyTotalAlbums from "@/features/dashboard/components/my-total-alnums";
+import MyTotalSongs from "@/features/dashboard/components/my-total-songs";
+import SongsPerArtistChart from "@/features/dashboard/components/songs-chart";
+import TotalAlbums from "@/features/dashboard/components/total-album";
+import TotalArtists from "@/features/dashboard/components/total-artist";
+import UserRolesDonutChart from "@/features/dashboard/components/user-role-chart";
+import { useEffect, useState } from "react";
 
 export default function Page() {
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -74,6 +77,9 @@ export default function Page() {
                   <MusicGenresChart />
                   <TotalArtists />
                   <TotalAlbums />
+                  <SongsPerArtistChart artistIds={[4, 6, 22, 20, 18]} />
+                  <UserRolesDonutChart />
+                  <ArtistsPerMonthChart />
                 </>
               )}
             </div>

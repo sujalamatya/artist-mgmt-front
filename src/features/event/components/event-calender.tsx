@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Event } from "../types/event.type";
 import { eventFormSchema, EventFormValues } from "../schemas/form.schema";
+import { useRouter } from "next/navigation";
 
 export default function EventCalendar() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -24,6 +25,7 @@ export default function EventCalendar() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
+  const router = useRouter();
 
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventFormSchema),
@@ -37,21 +39,23 @@ export default function EventCalendar() {
     },
   });
 
+  // Load events on component mount
   useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const data = await fetchEvents();
-        setEvents(data);
-      } catch (error) {
-        toast.error("Failed to load events");
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadEvents();
   }, []);
+
+  const loadEvents = async () => {
+    try {
+      setIsLoading(true);
+      const data = await fetchEvents();
+      setEvents(data);
+    } catch (error) {
+      toast.error("Failed to load events");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const getEventsForDate = (date: Date) => {
     return events.filter((event) => {
@@ -77,8 +81,8 @@ export default function EventCalendar() {
           ...values,
           event_date: localISOTime,
         });
-        setEvents(
-          events.map((e) => (e.id === currentEvent.id ? updatedEvent : e))
+        setEvents((prevEvents) =>
+          prevEvents.map((e) => (e.id === currentEvent.id ? updatedEvent : e))
         );
         toast.success("Event updated successfully");
       } else {
@@ -86,16 +90,17 @@ export default function EventCalendar() {
           ...values,
           event_date: localISOTime,
         });
-        setEvents([...events, newEvent]);
+        setEvents((prevEvents) => [...prevEvents, newEvent]);
         toast.success("Event created successfully");
       }
+
       setIsDialogOpen(false);
+      router.refresh();
     } catch (error) {
       toast.error("Failed to save event");
       console.error(error);
     }
   };
-
   const handleDelete = async (id: number) => {
     try {
       await deleteEvent(id);
