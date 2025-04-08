@@ -19,70 +19,37 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signUp } from "../actions/signup.action";
+import { signUpSchema, SignUpFormValues } from "../schemas/form.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 export default function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    phone: "",
-    dob: "",
-    gender: "",
-    address: "",
-    email: "",
-    password: "",
-    rePassword: "",
-    role: "",
-  });
-
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { id, value } = e.target;
-    setFormData({ ...formData, [id]: value });
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setValue,
+    watch,
+  } = useForm<SignUpFormValues>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      role: undefined,
+    },
+  });
 
-  const handleSelectChange = (id: string, value: string) => {
-    setFormData({ ...formData, [id]: value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Validate passwords match
-    if (formData.password !== formData.rePassword) {
-      setError("Passwords do not match. Please try again.");
-      return;
-    }
-
-    // Validate required fields
-    const requiredFields = [
-      "first_name",
-      "last_name",
-      "email",
-      "password",
-      "rePassword",
-      "role",
-    ];
-    for (const field of requiredFields) {
-      if (!formData[field as keyof typeof formData]) {
-        setError(`Please fill out the ${field.replace("_", " ")} field.`);
-        return;
-      }
-    }
-
-    // Remove rePassword before sending data
-    const { rePassword, ...userData } = formData;
-
+  const onSubmit = async (data: SignUpFormValues) => {
+    setError(null);
     try {
+      // Remove rePassword before sending data
+      const { rePassword, ...userData } = data;
       const response = await signUp(userData);
       console.log("Success:", response);
-      setError(null);
       router.push("/"); // Redirect to home page after successful signup
     } catch (error) {
       setError(
@@ -96,26 +63,28 @@ export default function SignUpForm({
       className={cn("flex flex-col gap-6 max-w-4xl mx-auto p-4", className)}
       {...props}
     >
-      {/* Error Alert Dialog */}
-      {error && (
-        <Alert variant="destructive" className="mt-10">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+      <Card className="overflow-hidden p-0 shadow-lg min-h-[680px]">
+        <CardContent className="grid p-0 h-full md:grid-cols-2">
+          {/* Error Alert - positioned inside card but above tabs */}
+          {error && (
+            <div className="absolute top-4 left-0 right-0 px-6 z-10">
+              <Alert variant="destructive" className="w-full">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            </div>
+          )}
 
-      <Card className="overflow-hidden p-0 shadow-lg h-[680px]">
-        <CardContent className="grid p-0 md:grid-cols-2">
-          <Tabs defaultValue="personal" className="p-6 md:p-8">
+          <Tabs defaultValue="personal" className="p-6 md:p-8 w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="personal">Personal Details</TabsTrigger>
               <TabsTrigger value="account">Account Details</TabsTrigger>
             </TabsList>
 
             {/* Personal Details Tab */}
-            <TabsContent value="personal">
-              <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+            <TabsContent value="personal" className="mt-6">
+              <div className="flex flex-col gap-6">
                 <div className="flex flex-col items-center text-center">
                   <h1 className="text-2xl font-bold">Create an Account</h1>
                   <p className="text-muted-foreground text-balance">
@@ -129,11 +98,14 @@ export default function SignUpForm({
                     id="first_name"
                     type="text"
                     placeholder="John"
-                    required
                     className="w-full"
-                    value={formData.first_name}
-                    onChange={handleChange}
+                    {...register("first_name")}
                   />
+                  {errors.first_name && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.first_name.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid gap-3">
@@ -142,11 +114,14 @@ export default function SignUpForm({
                     id="last_name"
                     type="text"
                     placeholder="Doe"
-                    required
                     className="w-full"
-                    value={formData.last_name}
-                    onChange={handleChange}
+                    {...register("last_name")}
                   />
+                  {errors.last_name && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.last_name.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid gap-3">
@@ -156,9 +131,13 @@ export default function SignUpForm({
                     type="text"
                     placeholder="9876543210"
                     className="w-full"
-                    value={formData.phone}
-                    onChange={handleChange}
+                    {...register("phone")}
                   />
+                  {errors.phone && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.phone.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid gap-3">
@@ -167,20 +146,17 @@ export default function SignUpForm({
                     id="dob"
                     type="date"
                     className="w-full"
-                    value={formData.dob}
-                    onChange={handleChange}
+                    {...register("dob")}
                   />
                 </div>
 
                 <div className="grid gap-3">
                   <Label htmlFor="gender">Gender</Label>
                   <Select
-                    value={formData.gender}
-                    onValueChange={(value) =>
-                      handleSelectChange("gender", value)
-                    }
+                    onValueChange={(value) => setValue("gender", value)}
+                    defaultValue={watch("gender")}
                   >
-                    <SelectTrigger className="border border-gray-300 p-2 rounded-md w-full">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select Gender" />
                     </SelectTrigger>
                     <SelectContent>
@@ -198,27 +174,29 @@ export default function SignUpForm({
                     type="text"
                     placeholder="Enter your address"
                     className="w-full"
-                    value={formData.address}
-                    onChange={handleChange}
+                    {...register("address")}
                   />
                 </div>
-              </form>
+              </div>
             </TabsContent>
 
             {/* Account Details Tab */}
-            <TabsContent value="account">
-              <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+            <TabsContent value="account" className="mt-6">
+              <div className="flex flex-col gap-6">
                 <div className="grid gap-3">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
                     placeholder="example@gmail.com"
-                    required
                     className="w-full"
-                    value={formData.email}
-                    onChange={handleChange}
+                    {...register("email")}
                   />
+                  {errors.email && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid gap-3">
@@ -226,11 +204,14 @@ export default function SignUpForm({
                   <Input
                     id="password"
                     type="password"
-                    required
                     className="w-full"
-                    value={formData.password}
-                    onChange={handleChange}
+                    {...register("password")}
                   />
+                  {errors.password && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid gap-3">
@@ -238,17 +219,23 @@ export default function SignUpForm({
                   <Input
                     id="rePassword"
                     type="password"
-                    required
                     className="w-full"
-                    value={formData.rePassword}
-                    onChange={handleChange}
+                    {...register("rePassword")}
                   />
+                  {errors.rePassword && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.rePassword.message}
+                    </p>
+                  )}
                 </div>
+
                 <div className="grid gap-3">
                   <Label htmlFor="role">Role</Label>
                   <Select
-                    value={formData.role}
-                    onValueChange={(value) => handleSelectChange("role", value)}
+                    onValueChange={(value: "artist" | "artist_manager") =>
+                      setValue("role", value, { shouldValidate: true })
+                    }
+                    defaultValue={watch("role")}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select Role" />
@@ -260,10 +247,20 @@ export default function SignUpForm({
                       </SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.role && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.role.message}
+                    </p>
+                  )}
                 </div>
 
-                <Button type="submit" className="w-full">
-                  Sign Up
+                <Button
+                  type="button"
+                  onClick={handleSubmit(onSubmit)}
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Creating account..." : "Sign Up"}
                 </Button>
 
                 <div className="text-center text-sm">
@@ -275,16 +272,17 @@ export default function SignUpForm({
                     Login
                   </a>
                 </div>
-              </form>
+              </div>
             </TabsContent>
           </Tabs>
 
           {/* Image Section */}
-          <div className="bg-muted relative hidden md:block">
-            <Image src={juice} alt="Image" className="" />
+          <div className="bg-muted relative hidden md:block h-full">
+            <Image src={juice} alt="Image" />
           </div>
         </CardContent>
       </Card>
+
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
         By clicking Sign Up, you agree to our{" "}
         <a href="/tos">Terms of Service</a> and{" "}
