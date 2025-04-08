@@ -57,7 +57,7 @@ const getNavItems = (role: string) => {
     icon: LayoutDashboard,
   };
   const eventsItem = { title: "Events", url: "/events", icon: Calendar };
-  const settingsItem = { title: "Settings", url: "/settings", icon: Settings };
+  // const settingsItem = { title: "Settings", url: "/settings", icon: Settings };
 
   if (role === "artist") {
     return [
@@ -65,7 +65,7 @@ const getNavItems = (role: string) => {
       { title: "MyMusic", url: "/my-music", icon: Music },
       // { title: "MyAlbums", url: "/my-albums", icon: Library },
       eventsItem,
-      settingsItem,
+      // settingsItem,
     ];
   } else if (role === "super_admin") {
     return [
@@ -75,7 +75,7 @@ const getNavItems = (role: string) => {
       // { title: "Albums", url: "/albums", icon: Library },
       { title: "Users", url: "/users", icon: User },
       eventsItem,
-      settingsItem,
+      // settingsItem,
     ];
   } else if (role === "artist_manager") {
     return [
@@ -84,11 +84,12 @@ const getNavItems = (role: string) => {
       { title: "Music", url: "/my-music", icon: Music },
       // { title: "Albums", url: "/albums", icon: Library },
       eventsItem,
-      settingsItem,
+      // settingsItem,
     ];
   } else {
     // Default for other roles
-    return [dashboardItem, eventsItem, settingsItem];
+    return [dashboardItem, eventsItem];
+    // return [dashboardItem, eventsItem, settingsItem];
   }
 };
 

@@ -121,6 +121,13 @@ export default function MyMusicTable() {
             }}
           />
         </div>
+        <Button
+          className="p-4 m-5"
+          variant={"outline"}
+          onClick={() => router.push(`/my-music/add`)}
+        >
+          Add Song
+        </Button>
       </div>
 
       <ToastContainer position="top-right" autoClose={3000} />
@@ -225,7 +232,6 @@ export default function MyMusicTable() {
         <ImportCSVButton />
         <ExportCSVButton />
       </div>
-      {/* )} */}
     </div>
   );
 }
