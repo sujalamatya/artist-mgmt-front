@@ -55,7 +55,7 @@ export const updateEvent = async (
 
 export const deleteEvent = async (id: number): Promise<void> => {
   try {
-    const response = await fetch(`${EVENT_API_BASE_URL}/${id}/`, {
+    const response = await fetch(`${EVENT_API_BASE_URL}${id}/`, {
       method: "DELETE",
     });
     if (!response.ok) throw new Error("Failed to delete event");
