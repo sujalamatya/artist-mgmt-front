@@ -27,7 +27,6 @@ import { format } from "date-fns";
 import { UseFormReturn } from "react-hook-form";
 import { EventFormValues } from "@/types/types";
 import { useEffect, useState } from "react";
-import { fetchArtistsByUserId } from "@/api/api";
 import {
   Select,
   SelectContent,
@@ -35,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { fetchArtistsByUserId } from "@/features/artist/actions/artist.action";
 
 interface Artist {
   id: number;
