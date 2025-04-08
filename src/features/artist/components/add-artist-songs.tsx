@@ -119,18 +119,16 @@ export default function AddSongPage() {
         <Navbar />
       </header>
 
-      <main className="flex-1 flex items-center justify-center p-4 ">
-        <Card className="w-full max-w-md shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center">
-              Add New Song
-            </CardTitle>
+      <main className="flex-1 flex items-center justify-center p-6 md:p-8">
+        <Card className="w-[700px] max-w-xl shadow-lg">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold">Add New Song</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(handleAddSong)}
-                className="space-y-6"
+                className="space-y-4"
               >
                 <FormField
                   control={form.control}
@@ -141,11 +139,7 @@ export default function AddSongPage() {
                         Title <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Enter song title"
-                          {...field}
-                          className="focus-visible:ring-2 focus-visible:ring-primary"
-                        />
+                        <Input placeholder="Enter song title" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -161,11 +155,7 @@ export default function AddSongPage() {
                         Album <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Enter album name"
-                          {...field}
-                          className="focus-visible:ring-2 focus-visible:ring-primary"
-                        />
+                        <Input placeholder="Enter album name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -200,17 +190,16 @@ export default function AddSongPage() {
                   )}
                 />
 
-                <div className="flex justify-between pt-4">
+                <div className="flex justify-end gap-4 pt-4">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => router.push(`/artists/${id}`)}
                     disabled={isLoading}
-                    className="w-24"
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isLoading} className="w-24">
+                  <Button type="submit" disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
