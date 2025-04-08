@@ -129,3 +129,20 @@ export const createArtist = async (formData: FormData) => {
     throw new Error(error.message || "Failed to create artist");
   }
 };
+
+export const addArtistSong = async (songData: {
+  artist_id: string;
+  title: string;
+  album_name: string;
+  genre: string;
+}) => {
+  try {
+    const response = await axiosInstance.post(
+      `${ARTIST_API_BASE_URL}/artists/${songData.artist_id}/songs/`,
+      songData
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || error.message;
+  }
+};

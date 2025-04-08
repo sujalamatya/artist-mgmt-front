@@ -1,22 +1,7 @@
 "use client";
 
-import { createArtist, fetchArtists } from "@/api/api";
 import Navbar from "@/components/common/nav-bar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -25,6 +10,15 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -32,8 +26,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTheme } from "next-themes";
+import {
+  createArtist,
+  fetchArtists,
+} from "@/features/artist/actions/artist.action";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function ProfilePage() {
@@ -64,10 +66,14 @@ export default function ProfilePage() {
   const [image, setImage] = useState<File | null>(null);
   const [completionPercentage, setCompletionPercentage] = useState(0);
   const [artistExists, setArtistExists] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(100);
 
   const checkIfArtistExists = async (name: string) => {
     try {
-      const artists = await fetchArtists();
+      const data = await fetchArtists(page, pageSize); // 'data' is an object
+      const artists = data.artists; // extract the array from 'data'
+
       const exists = artists.some((artist: any) => artist.name === name);
       setArtistExists(exists);
     } catch (error) {
