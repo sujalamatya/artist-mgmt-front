@@ -1,42 +1,54 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-
 import { useRouter, useParams } from "next/navigation";
-
 import { toast } from "react-toastify";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  Form,
+} from "@/components/ui/form";
 import { fetchArtistById, updateArtist } from "../actions/artist.action";
+import { artistSchema, ArtistFormData } from "../schemas/artist-add.schema";
 
 export default function EditArtist() {
   const router = useRouter();
   const { id } = useParams();
-  const [artist, setArtist] = useState({
-    name: "",
-    dob: "",
-    gender: "",
-    address: "",
-    first_release_year: "",
-    no_of_albums: "",
-    image: null as File | null,
-  });
+  const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+
+  const form = useForm<ArtistFormData>({
+    resolver: zodResolver(artistSchema),
+    defaultValues: {
+      name: "",
+      dob: "",
+      gender: "",
+      address: "",
+      first_release_year: 0,
+      no_of_albums: 0,
+    },
+  });
 
   useEffect(() => {
     const getArtist = async () => {
       try {
         const data = await fetchArtistById(Number(id));
-        setArtist({
+        form.reset({
           name: data.name,
           dob: data.dob,
           gender: data.gender,
           address: data.address,
-          first_release_year: data.first_release_year.toString(),
-          no_of_albums: data.no_of_albums.toString(),
-          image: null,
+          first_release_year: data.first_release_year,
+          no_of_albums: data.no_of_albums,
         });
         setPreview(data.image || null);
       } catch (error) {
@@ -45,35 +57,30 @@ export default function EditArtist() {
       }
     };
     getArtist();
-  }, [id]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setArtist((prev) => ({ ...prev, [name]: value }));
-  };
+  }, [id, form]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (file) {
-      setArtist((prev) => ({ ...prev, image: file }));
+      setImage(file);
       setPreview(URL.createObjectURL(file));
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("name", artist.name);
-    formData.append("dob", artist.dob);
-    formData.append("gender", artist.gender);
-    formData.append("address", artist.address);
-    formData.append("first_release_year", artist.first_release_year);
-    formData.append("no_of_albums", artist.no_of_albums);
-    if (artist.image) {
-      formData.append("image", artist.image);
-    }
-
+  const onSubmit = async (data: ArtistFormData) => {
     try {
+      const formData = new FormData();
+
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined) {
+          formData.append(key, value.toString());
+        }
+      });
+
+      if (image) {
+        formData.append("image", image);
+      }
+
       await updateArtist(Number(id), formData);
       toast.success("Artist updated successfully!");
       router.back();
@@ -90,95 +97,132 @@ export default function EditArtist() {
           <CardTitle>Edit Artist</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
                 name="name"
-                value={artist.name}
-                onChange={handleChange}
-                placeholder="Enter artist name"
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter artist name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="dob">Date of Birth</Label>
-              <Input
-                id="dob"
-                type="date"
+
+              <FormField
+                control={form.control}
                 name="dob"
-                value={artist.dob}
-                onChange={handleChange}
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date of Birth</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="gender">Gender</Label>
-              <Input
-                id="gender"
+
+              <FormField
+                control={form.control}
                 name="gender"
-                value={artist.gender}
-                onChange={handleChange}
-                placeholder="Enter gender"
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Gender</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter gender" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="address">Address</Label>
-              <Input
-                id="address"
+
+              <FormField
+                control={form.control}
                 name="address"
-                value={artist.address}
-                onChange={handleChange}
-                placeholder="Enter address"
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Address</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter address" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="first_release_year">First Release Year</Label>
-              <Input
-                id="first_release_year"
-                type="number"
+
+              <FormField
+                control={form.control}
                 name="first_release_year"
-                value={artist.first_release_year}
-                onChange={handleChange}
-                placeholder="Enter first release year"
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Release Year</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Enter first release year"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value === "" ? "" : Number(e.target.value)
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="no_of_albums">Albums Released</Label>
-              <Input
-                id="no_of_albums"
-                type="number"
+
+              <FormField
+                control={form.control}
                 name="no_of_albums"
-                value={artist.no_of_albums}
-                onChange={handleChange}
-                placeholder="Enter number of albums"
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Albums Released</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Enter number of albums"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value === "" ? "" : Number(e.target.value)
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="image">Artist Image</Label>
-              <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-              />
-              {preview && (
-                <img
-                  src={preview}
-                  alt="Artist Preview"
-                  className="mt-2 w-40 h-40 object-cover rounded-md"
+
+              <div>
+                <Label htmlFor="image">Artist Image (Optional)</Label>
+                <Input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
                 />
-              )}
-            </div>
-            <Button type="submit" className="w-full">
-              Update Artist
-            </Button>
-          </form>
+                {preview && (
+                  <img
+                    src={preview}
+                    alt="Artist Preview"
+                    className="mt-2 w-40 h-40 object-cover rounded-md"
+                  />
+                )}
+              </div>
+
+              <Button type="submit" className="w-full">
+                Update Artist
+              </Button>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
