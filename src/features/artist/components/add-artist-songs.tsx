@@ -25,6 +25,17 @@ import {
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { addArtistSong } from "../actions/artist.action";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { songSchema, SongFormData } from "../schemas/artist-songs.schema";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 const GENRES = [
   "Blues",
@@ -42,22 +53,27 @@ export default function AddSongPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
-
-  const [title, setTitle] = useState("");
-  const [album, setAlbum] = useState("");
-  const [genre, setGenre] = useState<(typeof GENRES)[number]>("Blues");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleAddSong = async () => {
-    if (!title.trim() || !album.trim()) {
-      toast.error("Please fill in all required fields.");
-      return;
-    }
+  const form = useForm<SongFormData>({
+    resolver: zodResolver(songSchema),
+    defaultValues: {
+      title: "",
+      album_name: "",
+      genre: "Blues",
+    },
+  });
 
+  const handleAddSong = async (data: SongFormData) => {
     setIsLoading(true);
 
     toast.promise(
-      addArtistSong({ artist_id: id, title, album_name: album, genre }),
+      addArtistSong({
+        artist_id: id,
+        title: data.title,
+        album_name: data.album_name,
+        genre: data.genre,
+      }),
       {
         loading: "Adding song...",
         success: () => {
@@ -111,86 +127,102 @@ export default function AddSongPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form
-              className="space-y-6"
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleAddSong();
-              }}
-            >
-              <div className="space-y-2">
-                <Label htmlFor="title" className="text-sm font-medium">
-                  Title <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="title"
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Enter song title"
-                  className="focus-visible:ring-2 focus-visible:ring-primary"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="album" className="text-sm font-medium">
-                  Album <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="album"
-                  type="text"
-                  value={album}
-                  onChange={(e) => setAlbum(e.target.value)}
-                  placeholder="Enter album name"
-                  className="focus-visible:ring-2 focus-visible:ring-primary"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="genre" className="text-sm font-medium">
-                  Genre
-                </Label>
-                <Select
-                  value={genre}
-                  onValueChange={(value) =>
-                    setGenre(value as (typeof GENRES)[number])
-                  }
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select genre" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {GENRES.map((genreOption) => (
-                      <SelectItem key={genreOption} value={genreOption}>
-                        {genreOption}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex justify-between pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => router.push(`/artists/${id}`)}
-                  disabled={isLoading}
-                  className="w-24"
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isLoading} className="w-24">
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Adding...
-                    </>
-                  ) : (
-                    "Add Song"
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(handleAddSong)}
+                className="space-y-6"
+              >
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Title <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter song title"
+                          {...field}
+                          className="focus-visible:ring-2 focus-visible:ring-primary"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </Button>
-              </div>
-            </form>
+                />
+
+                <FormField
+                  control={form.control}
+                  name="album_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Album <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter album name"
+                          {...field}
+                          className="focus-visible:ring-2 focus-visible:ring-primary"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="genre"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Genre</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select genre" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {GENRES.map((genreOption) => (
+                            <SelectItem key={genreOption} value={genreOption}>
+                              {genreOption}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex justify-between pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => router.push(`/artists/${id}`)}
+                    disabled={isLoading}
+                    className="w-24"
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isLoading} className="w-24">
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Adding...
+                      </>
+                    ) : (
+                      "Add Song"
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </CardContent>
         </Card>
       </main>
