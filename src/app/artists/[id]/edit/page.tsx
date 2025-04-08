@@ -1,6 +1,6 @@
-import EditArtist from "@/components/artist/artist-edit-table";
-import ViewArtist from "@/components/artist/artist-profile";
-import ArtistProfileSongs from "@/components/artist/artist-profile-songs";
+import EditArtist from "@/features/artist/components/artist-edit-table";
+import ViewArtist from "@/features/artist/components/artist-profile";
+import ArtistProfileSongs from "@/features/artist/components/artist-profile-songs";
 import Navbar from "@/components/common/nav-bar";
 import {
   Breadcrumb,
